@@ -1,5 +1,5 @@
 <script>
-  import {onDestroy} from 'svelte';
+  import {onDestroy, onMount} from 'svelte';
   import {songMetadata} from "../stores/openmptStore.js";
 
   let loopMode = true;
@@ -7,14 +7,9 @@
   let audioWorkletModule = null;
   export let song = null;
 
-
+  // No hot reloading here!
   if (import.meta.hot) {
-    import.meta.hot.dispose((data) => {
-      console.log("Dispose event called: ", data);
-      // cleanup side effect
-      stopProcessor(song);
-
-    })
+    import.meta.hot.decline();
   }
 
   onDestroy(() => stopProcessor(''));
@@ -28,15 +23,16 @@
 
     if (processorNode) {
       processorNode.port.postMessage({
-        type: "dispose",
+        type: "dispose2",
         value: null,
       });
+
       processorNode.disconnect();
       processorNode = null;
     }
   }
 
-  const onLoad = (buffer) => {
+  onMount(() => {
     if (!audioWorkletModule) {
       audioWorkletModule = audioContext.audioWorklet.addModule("worklet/openmpt.worklet.js");
     }
@@ -49,9 +45,7 @@
           numberOfInputs: 0,
           numberOfOutputs: 1,
           outputChannelCount: [2],
-          processorOptions: {
-            moduleBuffer: buffer,
-          }
+          processorOptions: {},
         }
       );
       processorNode.connect(audioContext.destination);
@@ -83,9 +77,19 @@
         }
       });
 
-      // Needed to remove buffer reference from this promise
-      buffer = null;
+      audioContext.suspend();
     })
+  });
+
+  const onLoad = (buffer) => {
+    if (!processorNode) {
+      return;
+    }
+
+    processorNode.port.postMessage({
+      type: 'data',
+      value: buffer,
+    });
   }
 
   const toggleLoopMode = () => {
@@ -105,7 +109,7 @@
     audioContext.resume();
   }
 
-  const LoadFile = (callback) => {
+  const LoadFile = (song, callback) => {
     if (!song) {
       return;
     }
@@ -136,9 +140,10 @@
   }
 
   $: {
-    stopProcessor(song);
-    LoadFile(onLoad);
-  };
+    //stopProcessor(song);
+    LoadFile(song, onLoad);
+  }
+  ;
 </script>
 
 <button on:click={onPlay}>PLAY!!!</button>

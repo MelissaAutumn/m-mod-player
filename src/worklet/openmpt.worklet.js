@@ -118,6 +118,11 @@ class Utility {
   }
 }
 
+/**
+ * WebAudioWorkletProcessor for LibOpenMPT
+ * All calls against the web assembly module (`this._libopenmpt`) are based off the c api (with an added underscore at the beginning.)
+ * https://lib.openmpt.org/doc/group__libopenmpt__c.html
+ */
 class LibOpenMPTProcessor extends AudioWorkletProcessor {
   #destructorCalled = false;
   bufferPtr = null;
@@ -130,11 +135,6 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
 
   songMetaData = {};
 
-  // Strings that were malloc'd. These should be free'd on destruct.
-  //#allocStrLoopMode = null;
-  //#allocStrContinue = null;
-  //#allocStrFadeOut = null;
-
   constructor(options) {
     super();
 
@@ -144,25 +144,8 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
       return;
     }
 
-    this.modulePtr = this.createModule(options.processorOptions.moduleBuffer);
-
-    if (!this.modulePtr) {
-      return;
-    }
-
-    // No longer need the array buffer!
-    options.processorOptions.moduleBuffer = null;
-
-    this.setLoopMode(options.processorOptions?.looping ?? true);
-
-    this.retrieveMetaData();
-
     this.leftBufferPtr = this._libopenmpt._malloc(4 * this.maxFramesPerChunk);
     this.rightBufferPtr = this._libopenmpt._malloc(4 * this.maxFramesPerChunk);
-
-    //this.#allocStrLoopMode = Utility.asciiToStack(this._libopenmpt, "play.at_end");
-    //this.#allocStrContinue = Utility.asciiToStack(this._libopenmpt,"continue");
-    //this.#allocStrFadeOut = Utility.asciiToStack(this._libopenmpt,"fadeout");
 
     this.port.onmessage = (e) => {
       this.onMessage(e);
@@ -170,12 +153,12 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
   }
 
   destruct() {
+    // Prevent multiple calls
     if (this.#destructorCalled) {
       return;
     }
 
     this.#destructorCalled = true;
-
 
     if (this.leftBufferPtr) {
       this._libopenmpt._free(this.leftBufferPtr);
@@ -185,23 +168,7 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
       this._libopenmpt._free(this.rightBufferPtr);
       this.rightBufferPtr = null;
     }
-    if (this.bufferPtr) {
-      this._libopenmpt._free(this.bufferPtr);
-      this.bufferPtr = null;
-    }
-    //if (this.#allocStrContinue) {
-    //  this._libopenmpt._free(this.#allocStrContinue);
-    //  this.#allocStrContinue = null;
-    //}
-    //if (this.#allocStrFadeOut) {
-    //  this._libopenmpt._free(this.#allocStrFadeOut);
-    //  this.#allocStrFadeOut = null;
-    //}
-
-    if (this.modulePtr) {
-      this._libopenmpt._openmpt_module_destroy(this.modulePtr);
-      this.modulePtr = null;
-    }
+    this.destroyModule();
 
     this._libopenmpt = null;
   }
@@ -211,7 +178,20 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
       return;
     }
 
-    switch(evt.data.type) {
+    switch (evt.data.type) {
+      case "data": {
+        this.destroyModule();
+
+        this.modulePtr = this.createModule(evt.data.value);
+        if (this.modulePtr) {
+          // A little awkward, but set our current looping preference
+          this.setLoopMode(this.looping);
+          this.retrieveMetaData();
+        }
+
+        evt.data.value = null;
+      }
+        break;
       case "loop":
         this.setLoopMode(evt.data.value);
         break;
@@ -219,8 +199,6 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
         this.destruct();
         break;
     }
-
-    console.log(evt.data);
   }
 
   retrieveMetaData() {
@@ -234,6 +212,7 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
       this._libopenmpt._free(allocStrKeyName);
     }
 
+    // Keep a local copy
     this.songMetaData = data;
 
     this.port.postMessage({
@@ -244,12 +223,7 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
 
   setLoopMode(loop) {
     this.looping = loop;
-
     this._libopenmpt._openmpt_module_set_repeat_count(this.modulePtr, this.looping ? -1 : 0);
-/*
-    const mode = this.looping ? this.#allocStrContinue : this.#allocStrFadeOut;
-    this._libopenmpt._openmpt_module_ctl_set_text(this.modulePtr, this.#allocStrLoopMode, mode);
- */
   }
 
   createModule(buffer) {
@@ -259,8 +233,19 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
     return this._libopenmpt._openmpt_module_create_from_memory(this.bufferPtr, byteArray.byteLength, 0, 0, 0);
   }
 
+  destroyModule() {
+    if (this.modulePtr) {
+      this._libopenmpt._openmpt_module_destroy(this.modulePtr);
+      this.modulePtr = null;
+    }
+    if (this.bufferPtr) {
+      this._libopenmpt._free(this.bufferPtr);
+      this.bufferPtr = null;
+    }
+  }
+
   process(inputs, outputs, parameters) {
-    if (!this.modulePtr || !this.leftBufferPtr || ! this.rightBufferPtr) {
+    if (!this.modulePtr || !this.leftBufferPtr || !this.rightBufferPtr) {
       this.destruct();
       return false;
     }
@@ -271,9 +256,6 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
     const actualFramesPerChunk = this._libopenmpt._openmpt_module_read_float_stereo(this.modulePtr, 44100, framesPerChunk, this.leftBufferPtr, this.rightBufferPtr);
 
     if (actualFramesPerChunk === 0) {
-      if (!this.looping) {
-        this.destruct();
-      }
       return this.looping;
     }
 
