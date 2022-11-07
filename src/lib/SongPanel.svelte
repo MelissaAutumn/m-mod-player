@@ -18,10 +18,6 @@
     ['Container Format', metaData?.containerLong],
   ];
 
-
-
-  console.log(metaData);
-  console.log(information);
 </script>
 
 <div id="main">
@@ -37,7 +33,7 @@
     </div>
     <div class="column">
         <h2>Sequences</h2>
-        <SubSongList subSongList={subSongs} on:subsong-select/>
+        <SubSongList subSongList={subSongs}/>
     </div>
     <div class="column">
         <h2>Comments</h2>

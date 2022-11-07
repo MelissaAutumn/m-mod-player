@@ -1,18 +1,13 @@
 <script>
   import SongDB from '../db.json';
-  import {createEventDispatcher} from 'svelte';
-
-  const dispatch = createEventDispatcher();
+  import {getContext} from 'svelte';
+  import { selectedSongKey } from "../model/player.js";
 
   export let category = null;
 
-  let selectedSong = null;
-  let hoveredSong = null;
+  const selectedSong = getContext(selectedSongKey);
 
-  const onPlay = (song) => {
-    selectedSong = song;
-    dispatch('song-selected', {song: song});
-  }
+  let hoveredSong = null;
 
 </script>
 <style>
@@ -32,8 +27,8 @@
     {#if category !== null}
         {#each SongDB.Songs[category] as song (song)}
             <li
-                    class="{selectedSong === song || hoveredSong === song ? 'selected' : ''}"
-                    on:click={() => onPlay(song)}
+                    class="{$selectedSong === song || hoveredSong === song ? 'selected' : ''}"
+                    on:click={() => $selectedSong = song}
                     on:mouseover={() => hoveredSong = song}
                     on:mouseout={() => hoveredSong = null}>
                 { song.indexOf("/") !== -1 ? song.split("/").splice(1).join('/') : song }

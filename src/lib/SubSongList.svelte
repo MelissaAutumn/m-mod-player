@@ -1,19 +1,16 @@
 <script>
-  import SongDB from '../db.json';
-  import {createEventDispatcher} from 'svelte';
-
-  const dispatch = createEventDispatcher();
+  import {getContext} from 'svelte';
+  import { selectedSubSongKey } from "../model/player.js";
 
   export let subSongList = [];
   let adjustedSubSongList = [];
 
-  let selected = -1;
-  let hovered = null;
-
-  const onSelect = (subsong) => {
-    selected = subsong;
-    dispatch('subsong-select', {subsong: subsong});
+  const selectedSong = getContext(selectedSubSongKey);
+  if (!selectedSong) {
+    console.warn(`No ${selectedSubSongKey.description} context!`);
   }
+
+  let hovered = null;
 
   // We'll have to subtract one from everything to get -1 = ALL
   $: {
@@ -40,8 +37,8 @@
         {#each adjustedSubSongList as name, index (index)}
             <li>
                 <h4
-                        class="{selected === index-1 || hovered === index-1 ? 'selected' : ''}"
-                        on:click={() => onSelect(index-1)}
+                        class="{$selectedSong === index-1 || hovered === index-1 ? 'selected' : ''}"
+                        on:click={() => $selectedSong = index-1}
                         on:mouseover={() => hovered = index-1}
                         on:mouseout={() => hovered = null}>
                     {name}

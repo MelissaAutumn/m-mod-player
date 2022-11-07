@@ -3,34 +3,35 @@
   import OpenMPT from "./OpenMPT.svelte";
   import SongList from "./SongList.svelte";
   import SongBar from "./SongBar.svelte";
+  import {setContext} from "svelte";
+  import { writable } from 'svelte/store';
+  import { selectedSongKey, selectedSubSongKey } from "../model/player.js";
 
   let selectedCategory = null;
-  let selectedSong = null;
-  let selectedSubSong = -1;
   let isPlaying = false;
 
-  const onSongSelect = (song) => {
-    selectedSong = song;
-    onSubSongSelect(-1);
-  };
-  const onSubSongSelect = (subsong) => {
-    selectedSubSong = subsong;
+  const selectedSong = setContext(selectedSongKey, writable(null));
+  const selectedSubSong = setContext(selectedSubSongKey, writable(-1));
+
+  // Reset selected subsong if selected song changes
+  $: if ($selectedSong) {
+    $selectedSubSong = -1;
   }
 
 </script>
 <div class="main">
     <div class="grid">
-        <OpenMPT subsong={selectedSubSong} song={selectedSong} isPlaying={isPlaying}/>
+        <OpenMPT subsong={$selectedSubSong} song={$selectedSong} isPlaying={isPlaying}/>
         <div class="categories">
             <h2>Categories</h2>
             <Categories on:category-select={(evt) => selectedCategory = evt.detail.category}/>
         </div>
         <div class="song-list">
             <h2>Songs</h2>
-            <SongList category={selectedCategory} on:song-selected={(evt) => onSongSelect(evt.detail.song)}/>
+            <SongList category={selectedCategory}/>
         </div>
         <div class="player-bar">
-            <SongBar on:playback={(evt) => isPlaying = evt.detail.state} on:subsong-select={(evt) => onSubSongSelect(evt.detail.subsong)}/>
+            <SongBar on:playback={(evt) => isPlaying = evt.detail.state}/>
         </div>
     </div>
 </div>
