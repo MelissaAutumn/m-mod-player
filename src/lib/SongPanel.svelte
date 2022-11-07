@@ -59,6 +59,8 @@
         grid-row-gap: var(--spacing);
         padding: 2em;
         backdrop-filter: blur(10px);
+        overflow: scroll;
+        z-index: 10;
     }
 
     .column {

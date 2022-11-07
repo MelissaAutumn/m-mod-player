@@ -48,7 +48,7 @@
           numberOfOutputs: 1,
           outputChannelCount: [2],
           processorOptions: {
-            samplerRate: audioContext.sampleRate,
+            sampleRate: audioContext.sampleRate,
           },
         }
       );

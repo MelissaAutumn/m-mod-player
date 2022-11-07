@@ -6,7 +6,7 @@
 
   let selectedCategory = null;
   let hoveredCategory = null;
-  
+
   const onSelectCategory = (category) => {
     selectedCategory = category;
     dispatch('category-select', {category: category});
