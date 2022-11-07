@@ -252,7 +252,6 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
   }
 
   setSubsong(index) {
-    console.log("Setting sub song to ", index);
     this._libopenmpt._openmpt_module_select_subsong(this.modulePtr, index);
   }
 

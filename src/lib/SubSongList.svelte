@@ -5,6 +5,7 @@
   const dispatch = createEventDispatcher();
 
   export let subSongList = [];
+  let adjustedSubSongList = [];
 
   let selected = -1;
   let hovered = null;
@@ -15,8 +16,11 @@
   }
 
   // We'll have to subtract one from everything to get -1 = ALL
-  subSongList.splice(0, 0, "All Sequences");
-
+  $: {
+    // Clone the array
+    adjustedSubSongList = subSongList.slice(0);
+    adjustedSubSongList.splice(0, 0, "All Sequences");
+  }
 </script>
 <style>
     ul, li {
@@ -33,7 +37,7 @@
 
 <div>
     <ul>
-        {#each subSongList as name, index (index)}
+        {#each adjustedSubSongList as name, index (index)}
             <li>
                 <h4
                         class="{selected === index-1 || hovered === index-1 ? 'selected' : ''}"
