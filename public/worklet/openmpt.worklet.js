@@ -4432,6 +4432,7 @@
 
     looping = true;
     maxFramesPerChunk = 128;
+    sampleRate = 44100;
 
     songMetaData = {};
 
@@ -4443,6 +4444,8 @@
       if (!this._libopenmpt) {
         return;
       }
+
+      this.sampleRate = options?.processorOptions?.sampleRate ?? this.sampleRate;
 
       this.leftBufferPtr = this._libopenmpt._malloc(4 * this.maxFramesPerChunk);
       this.rightBufferPtr = this._libopenmpt._malloc(4 * this.maxFramesPerChunk);
@@ -4553,7 +4556,7 @@
       const framesToRender = outputs[0][0].length;
       const framesPerChunk = Math.min(framesToRender, this.maxFramesPerChunk);
 
-      const actualFramesPerChunk = this._libopenmpt._openmpt_module_read_float_stereo(this.modulePtr, 44100, framesPerChunk, this.leftBufferPtr, this.rightBufferPtr);
+      const actualFramesPerChunk = this._libopenmpt._openmpt_module_read_float_stereo(this.modulePtr, this.sampleRate, framesPerChunk, this.leftBufferPtr, this.rightBufferPtr);
 
       if (actualFramesPerChunk === 0) {
         return this.looping;

@@ -6,6 +6,7 @@
   let processorNode = null;
   let audioWorkletModule = null;
   export let song = null;
+  export let isPlaying = false;
 
   // No hot reloading here!
   if (import.meta.hot) {
@@ -45,7 +46,9 @@
           numberOfInputs: 0,
           numberOfOutputs: 1,
           outputChannelCount: [2],
-          processorOptions: {},
+          processorOptions: {
+            samplerRate: audioContext.sampleRate,
+          },
         }
       );
       processorNode.connect(audioContext.destination);
@@ -105,8 +108,8 @@
     })
   }
 
-  const onPlay = () => {
-    audioContext.resume();
+  const handlePlayback = (isPlaying) => {
+    isPlaying ? audioContext.resume() : audioContext.suspend();
   }
 
   const LoadFile = (song, callback) => {
@@ -143,8 +146,8 @@
     //stopProcessor(song);
     LoadFile(song, onLoad);
   }
-  ;
-</script>
 
-<button on:click={onPlay}>PLAY!!!</button>
-<button on:click={toggleLoopMode}>LOOP {loopMode}</button>
+  $: {
+    handlePlayback(isPlaying);
+  }
+</script>
