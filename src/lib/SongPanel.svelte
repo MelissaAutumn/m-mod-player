@@ -2,6 +2,7 @@
   import SubSongList from "./SubSongList.svelte";
 
   export let metaData = {};
+  export let subSongs = [];
 
   // Remove any new lines at the start!
   const regex = /(^\n*)/gm;
@@ -16,6 +17,8 @@
     ['Original Format', metaData?.originalTypeLong],
     ['Container Format', metaData?.containerLong],
   ];
+
+
 
   console.log(metaData);
   console.log(information);
@@ -33,8 +36,8 @@
         </ul>
     </div>
     <div class="column">
-        <h2>SubSongs</h2>
-        <SubSongList/>
+        <h2>Sequences</h2>
+        <SubSongList subSongList={subSongs} on:subsong-select/>
     </div>
     <div class="column">
         <h2>Comments</h2>

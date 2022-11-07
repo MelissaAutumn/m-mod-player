@@ -22,19 +22,10 @@
 
     li {
         list-style: none;
-        margin-bottom: 2px;
+        margin-bottom: 16px;
+        font-size: 16pt;
         cursor: pointer;
-
     }
-
-    .selected {
-        color: #646cff;
-    }
-
-    .selected:hover {
-        color: #747bff;
-    }
-
 </style>
 
 <ul>
@@ -43,7 +34,8 @@
             <li
                     class="{selectedSong === song || hoveredSong === song ? 'selected' : ''}"
                     on:click={() => onPlay(song)}
-                    on:mouseover={() => hoveredSong = song}>
+                    on:mouseover={() => hoveredSong = song}
+                    on:mouseout={() => hoveredSong = null}>
                 { song.indexOf("/") !== -1 ? song.split("/").splice(1).join('/') : song }
             </li>
         {/each}

@@ -1,5 +1,5 @@
 <script>
-  import {songMetadata} from "../stores/openmptStore.js";
+  import {songMetadata as songMetadataStore, subSongData as subSongDataStore} from "../stores/openmptStore.js";
   import {createEventDispatcher} from 'svelte';
 
   import Icon from "./Icon.svelte";
@@ -10,10 +10,15 @@
   let songInfoPanelUp = false;
   let isPlaying = false;
   let songMetaData = {};
+  let subSongData = [];
 
-  songMetadata.subscribe((value) => {
+  songMetadataStore.subscribe((value) => {
     songMetaData = value;
   });
+
+  subSongDataStore.subscribe((value) => {
+    subSongData = value;
+  })
 
   const onPlayPause = () => {
     isPlaying = !isPlaying;
@@ -49,7 +54,7 @@
     </div>
     {#if songInfoPanelUp}
         <div class="panel">
-            <SongPanel metaData={songMetaData}/>
+            <SongPanel metaData={songMetaData} subSongs={subSongData} on:subsong-select/>
         </div>
     {/if}
 </div>

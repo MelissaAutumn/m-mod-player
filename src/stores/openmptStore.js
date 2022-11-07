@@ -18,3 +18,6 @@ export const songMetadata = writable({
   messageRaw: null,
   warnings: null,
 });
+export const subSongData = writable([
+
+]);

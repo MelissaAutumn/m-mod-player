@@ -4435,6 +4435,7 @@
     sampleRate = 44100;
 
     songMetaData = {};
+    subSongs = [];
 
     constructor(options) {
       super();
@@ -4490,10 +4491,14 @@
             // A little awkward, but set our current looping preference
             this.setLoopMode(this.looping);
             this.retrieveMetaData();
+            this.retrieveSubSongs();
           }
 
           evt.data.value = null;
         }
+          break;
+        case "subsong":
+          this.setSubsong(evt.data.value);
           break;
         case "loop":
           this.setLoopMode(evt.data.value);
@@ -4524,6 +4529,33 @@
       });
     }
 
+    retrieveSubSongs() {
+      const count = this._libopenmpt._openmpt_module_get_num_subsongs(this.modulePtr);
+      const data = [];
+
+      for (let i = 0; i < count; i++) {
+        const allocStrName = Utility.asciiToStack(this._libopenmpt, i);
+        let name = Utility.UTF8ToString(this._libopenmpt, this._libopenmpt._openmpt_module_get_subsong_name(this.modulePtr, allocStrName));
+        data.push(name.length === 0 ? ["Sequence", i+1].join(' ') : name);
+        this._libopenmpt._free(allocStrName);
+      }
+
+      // Keep a local copy
+      this.subSongs = data;
+
+      console.log(data);
+
+      this.port.postMessage({
+        type: 'subsongs',
+        value: this.subSongs
+      });
+    }
+
+    setSubsong(index) {
+      console.log("Setting sub song to ", index);
+      this._libopenmpt._openmpt_module_select_subsong(this.modulePtr, index);
+    }
+
     setLoopMode(loop) {
       this.looping = loop;
       this._libopenmpt._openmpt_module_set_repeat_count(this.modulePtr, this.looping ? -1 : 0);
@@ -4548,6 +4580,7 @@
     }
 
     process(inputs, outputs, parameters) {
+      //return true;
       if (!this.modulePtr || !this.leftBufferPtr || !this.rightBufferPtr) {
         this.destruct();
         return false;

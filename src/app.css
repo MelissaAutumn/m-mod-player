@@ -13,6 +13,20 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  /* Colour Vars */
+  --background-color-alt: #363d46;
+  --background-color-main: #213547;
+  --selection-color: #646cff;
+  --hover-color: #747bff;
+}
+
+.selected {
+  color: var(--selection-color);
+}
+
+.selected:hover {
+  color: var(--hover-color);
 }
 
 a {

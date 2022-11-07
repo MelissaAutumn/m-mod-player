@@ -1,11 +1,12 @@
 <script>
   import {onDestroy, onMount} from 'svelte';
-  import {songMetadata} from "../stores/openmptStore.js";
+  import {songMetadata, subSongData} from "../stores/openmptStore.js";
 
   let loopMode = true;
   let processorNode = null;
   let audioWorkletModule = null;
   export let song = null;
+  export let subsong = -1;
   export let isPlaying = false;
 
   // No hot reloading here!
@@ -77,6 +78,9 @@
               warnings: metadata?.warnings,
             });
             break;
+          case 'subsongs':
+            subSongData.set(evt.data.value);
+            break;
         }
       });
 
@@ -112,6 +116,19 @@
     isPlaying ? audioContext.resume() : audioContext.suspend();
   }
 
+  const handleSubsong = (index) => {
+    if (!processorNode) {
+      return;
+    }
+
+    console.log("Handle subsong");
+
+    processorNode.port.postMessage({
+      type: 'subsong',
+      value: index
+    });
+  }
+
   const LoadFile = (song, callback) => {
     if (!song) {
       return;
@@ -126,7 +143,6 @@
     xhr.onload = function (e) {
       if (xhr.status === 200) {
         callback(xhr.response); // no error
-        console.log("Clearing response buffer");
         xhr = null;
         return;
       } else {
@@ -145,6 +161,10 @@
   $: {
     //stopProcessor(song);
     LoadFile(song, onLoad);
+  }
+
+  $: {
+    handleSubsong(subsong);
   }
 
   $: {

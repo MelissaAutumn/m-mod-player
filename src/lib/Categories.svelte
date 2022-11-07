@@ -1,18 +1,15 @@
 <script>
   import SongDB from '../db.json';
-  import { createEventDispatcher } from 'svelte';
+  import {createEventDispatcher} from 'svelte';
 
   const dispatch = createEventDispatcher();
 
   let selectedCategory = null;
-  let hoveredSong = null;
-
-  console.log(SongDB);
-
+  let hoveredCategory = null;
+  
   const onSelectCategory = (category) => {
-    console.log("Selected category",category);
     selectedCategory = category;
-    dispatch('category-select', { category: category });
+    dispatch('category-select', {category: category});
   }
 
 </script>
@@ -23,17 +20,25 @@
 
     li {
         list-style: none;
-        margin-bottom: 2px;
+        margin-bottom: 16px;
+        font-size: 16pt;
         cursor: pointer;
     }
 </style>
 
 <div>
-<ul>
-    {#each Object.keys(SongDB.Songs) as key (key)}
-        <li>
-            <h4 on:click={() => onSelectCategory(key)}>{key}</h4>
-        </li>
-    {/each}
-</ul>
+    <ul>
+        {#each Object.keys(SongDB.Songs) as key (key)}
+            <li>
+                <h4
+                        class="{selectedCategory === key || hoveredCategory === key ? 'selected' : ''}"
+                        on:click={() => onSelectCategory(key)}
+                        on:mouseover={() => hoveredCategory = key}
+                        on:mouseout={() => hoveredCategory = null}>
+                {key}
+                </h4>
+            </li>
+        {/each}
+    </ul>
 </div>
+
