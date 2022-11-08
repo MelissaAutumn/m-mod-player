@@ -24,19 +24,23 @@
         font-size: 16pt;
         cursor: pointer;
     }
+
+    a {
+        color: #f9f9f9;
+    }
 </style>
 
 <div>
     <ul>
         {#each Object.keys(SongDB.Songs) as key (key)}
             <li>
-                <h4
+                <a
                         class="{selectedCategory === key || hoveredCategory === key ? 'selected' : ''}"
                         on:click={() => onSelectCategory(key)}
                         on:mouseover={() => hoveredCategory = key}
                         on:mouseout={() => hoveredCategory = null}>
                 {key}
-                </h4>
+                </a>
             </li>
         {/each}
     </ul>
