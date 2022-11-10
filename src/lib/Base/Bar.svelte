@@ -1,4 +1,18 @@
-<div class="bar">
+<script>
+    export let position = 'top';
+    export let style = {};
+
+    if (!style[position]) {
+      style[position] = 0;
+    }
+
+    // Combine object to string, the .join('') removes `,` that are added by default.
+    const style_string = Object.keys(style).map((key) => {
+      return `${key}: ${style[key]};`
+    }).join('');
+</script>
+
+<div class="bar" style={style_string}>
     <div class="content">
         <slot>
             <div> Test Left Content</div>
@@ -13,7 +27,6 @@
         height: 64px;
         width: 100%;
         position: fixed;
-        bottom: 0;
         left: 0;
     }
 

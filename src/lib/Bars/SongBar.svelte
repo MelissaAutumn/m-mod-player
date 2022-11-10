@@ -1,5 +1,5 @@
 <script>
-  import BottomBar from "../Base/BottomBar.svelte";
+  import Bar from "../Base/Bar.svelte";
   import Icon from "../Base/Icon.svelte";
 
   import {playback_state_key, selected_song_key} from "../../model/player.js";
@@ -14,13 +14,13 @@
   }
 
 </script>
-<BottomBar>
+<Bar position="bottom">
     <button class="btn-item" on:click={onClick}>
         <Icon type={icon_playback_state}/>
     </button>
     <span class="title">{$song ?? ''}</span>
     <span><Icon type="up"/></span>
-</BottomBar>
+</Bar>
 
 <style>
     .title {

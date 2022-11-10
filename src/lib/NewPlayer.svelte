@@ -5,6 +5,8 @@
   import SongBar from "./Bars/SongBar.svelte";
   import SongList from "./Pages/SongList.svelte";
   import OpenMPT from "./OpenMPT.svelte";
+  import Bar from "./Base/Bar.svelte";
+  import MenuBar from "./Bars/MenuBar.svelte";
 
   // These are writable stores for ease of use.
   const category = setContext(selected_category, writable(null));
@@ -19,6 +21,7 @@
 
 </script>
 <div class="main">
+    <MenuBar/>
     <SongList/>
     <SongBar/>
     <OpenMPT song={$song} subsong={sequence} isPlaying={$playback_state === 'playing'}/>

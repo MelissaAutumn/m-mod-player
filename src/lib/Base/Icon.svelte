@@ -3,6 +3,7 @@
   import pauseButton from "../../assets/pause-filled.svg";
   import chevronUp from '../../assets/chevron-up.svg';
   import chevronDown from '../../assets/chevron-down.svg';
+  import menu from '../../assets/menu.svg';
 
   export let type = null;
   export let size = '48px';
@@ -13,6 +14,7 @@
     'pause': pauseButton,
     'up': chevronUp,
     'down': chevronDown,
+    'menu': menu,
   }
 
   $: if (type) {
