@@ -2,7 +2,7 @@
   import {songMetadata as songMetadataStore, subSongData as subSongDataStore} from "../stores/openmptStore.js";
   import {createEventDispatcher} from 'svelte';
 
-  import Icon from "./Icon.svelte";
+  import Icon from "./Base/Icon.svelte";
   import SongPanel from "./SongPanel.svelte";
 
   const dispatch = createEventDispatcher();

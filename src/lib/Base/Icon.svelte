@@ -1,8 +1,8 @@
 <script>
-  import playButton from "../assets/play-filled-alt.svg";
-  import pauseButton from "../assets/pause-filled.svg";
-  import chevronUp from '../assets/chevron-up.svg';
-  import chevronDown from '../assets/chevron-down.svg';
+  import playButton from "../../assets/play-filled-alt.svg";
+  import pauseButton from "../../assets/pause-filled.svg";
+  import chevronUp from '../../assets/chevron-up.svg';
+  import chevronDown from '../../assets/chevron-down.svg';
 
   export let type = null;
   export let size = '48px';
@@ -25,7 +25,11 @@
 </span>
 <style>
   .icon-container {
-      display: inline-flex;
-      margin: auto;
+    display: inline-block;
+    margin: auto;
+  }
+  img {
+    height: 100%;
+    width: 100%;
   }
 </style>

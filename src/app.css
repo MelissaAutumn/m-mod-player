@@ -15,8 +15,8 @@
   -webkit-text-size-adjust: 100%;
 
   /* Colour Vars */
-  --background-color-alt: #363d46;
-  --background-color-main: #213547;
+  --background-color-alt: #2c282d;
+  --background-color-main: #2b2a2d;
   --selection-color: #646cff;
   --hover-color: #747bff;
 }
@@ -82,6 +82,12 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* List item button */
+.btn-item {
+  width: 100%;
+  background-color: initial;
 }
 
 @media (prefers-color-scheme: light) {
