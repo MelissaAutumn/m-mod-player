@@ -15,7 +15,7 @@
     'down': chevronDown,
   }
 
-  if (type) {
+  $: if (type) {
     iconSVG = iconMap[type] ?? null;
   }
 

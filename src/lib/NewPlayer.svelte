@@ -1,26 +1,27 @@
 <script>
-
   import {setContext} from "svelte";
-  import { writable } from 'svelte/store';
-  import { selectedSongKey, selectedSubSongKey } from "../model/player.js";
+  import {writable} from 'svelte/store';
+  import {selected_song_key, selected_sequence_key, selected_category, playback_state_key} from "../model/player.js";
   import SongBar from "./Bars/SongBar.svelte";
   import SongList from "./Pages/SongList.svelte";
+  import OpenMPT from "./OpenMPT.svelte";
 
-  let selectedCategory = null;
-  let isPlaying = false;
+  // These are writable stores for ease of use.
+  const category = setContext(selected_category, writable(null));
+  const song = setContext(selected_song_key, writable(null));
+  const sequence = setContext(selected_sequence_key, writable(-1));
+  const playback_state = setContext(playback_state_key, writable('paused'));
 
-  const selectedSong = setContext(selectedSongKey, writable(null));
-  const selectedSubSong = setContext(selectedSubSongKey, writable(-1));
-
-  // Reset selected subsong if selected song changes
-  $: if ($selectedSong) {
-    $selectedSubSong = -1;
+  // Reset selected sequence if selected song changes
+  $: if ($song) {
+    $sequence = -1;
   }
 
 </script>
 <div class="main">
     <SongList/>
     <SongBar/>
+    <OpenMPT song={$song} subsong={sequence} isPlaying={$playback_state === 'playing'}/>
 </div>
 <style>
     :root {
@@ -30,36 +31,5 @@
 
     .main {
         display: block;
-    }
-
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(var(--min-card-width), 2fr));
-        grid-column-gap: var(--spacing);
-        grid-row-gap: var(--spacing);
-
-    }
-
-    .categories {
-        height: 80vh;
-        display: inline-grid;
-        grid-column-end: auto;
-        grid-row: 1;
-        background-color: var(--background-color-main);
-        border-radius: 8px;
-    }
-
-    .song-list {
-        display: inline-grid;
-        overflow: scroll;
-        grid-row: span 2;
-        height: 80vh;
-        background-color: var(--background-color-main);
-
-        border-radius: 8px;
-    }
-
-    .player-bar {
-        /* moved inside component */
     }
 </style>

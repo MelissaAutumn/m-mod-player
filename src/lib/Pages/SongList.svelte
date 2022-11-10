@@ -1,8 +1,16 @@
 <script>
   import Page from "../Base/Page.svelte";
   import SongDB from "../../db.json"
+  import { selected_song_key } from "../../model/player.js";
+  import {getContext} from "svelte";
 
   const songs = SongDB.Songs["Essential Keygen Music"];
+
+  const song = getContext(selected_song_key);
+
+  const onSongSelect = (_song) => {
+    $song = _song;
+  }
 
 </script>
 
@@ -19,7 +27,7 @@
             {#each songs as song, index}
                 {@const is_odd = index % 2 === 0 ? 'odd' : 'even'}
                 <div class="row {is_odd}">
-                    <button class='btn-item'>{song.split('/').splice(1).join('/')}</button>
+                    <button on:click={() => onSongSelect(song)} class='btn-item'>{song.split('/').splice(1).join('/')}</button>
                 </div>
                 <div class="row {is_odd}">
                     {song.split('.').splice(-1).join('').toUpperCase()}
