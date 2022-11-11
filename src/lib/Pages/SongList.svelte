@@ -19,22 +19,23 @@
         <h2>Songs</h2>
     </div>
     {#if songs}
-        <div class="table">
-
-            <div class="heading">Name</div>
-            <div class="heading">Format</div>
-
-            {#each songs as song, index}
-                {@const is_odd = index % 2 === 0 ? 'odd' : 'even'}
-                <div class="row {is_odd}">
+        <table class="table">
+            <tr role="rowheader">
+                <th>Name</th>
+                <th>Format</th>
+            </tr>
+        {#each songs as song, index}
+            {@const is_odd = index % 2 === 0}
+            <tr role="row">
+                <td class:odd={is_odd}>
                     <button on:click={() => onSongSelect(song)} class='btn-item' class:selected={$selected_song === song}>{song.split('/').splice(1).join('/')}</button>
-                </div>
-                <div class="row {is_odd}">
+                </td>
+                <td class:odd={is_odd}>
                     {song.split('.').splice(-1).join('').toUpperCase()}
-                </div>
-            {/each}
-
-        </div>
+                </td>
+            </tr>
+        {/each}
+        </table>
     {:else}
         <p>No Songs...</p>
     {/if}
@@ -43,6 +44,20 @@
 </Page>
 
 <style>
+    .table {
+        font-size: large;
+        width: 100%;
+    }
+    tr {
+        grid-template-columns: repeat(2, 1fr);
+        display: inline-grid;
+        width: 100%;
+    }
+    button {
+        width: 100%;
+        overflow: visible;
+    }
+    /*
     .table {
         display: grid;
         width: 100%;
@@ -58,6 +73,7 @@
         height: 100%;
         width: 100%;
     }
+     */
     .odd {
         background-color: var(--background-colour-alt);
     }
