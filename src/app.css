@@ -5,8 +5,6 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,19 +12,40 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  /* Colour Vars */
-  --background-color-alt: #2c282d;
-  --background-color-main: #2b2a2d;
+  /* Deprecated */
+  --background-color-alt: #1b4552;
+  --background-color-main: #183e4b;
   --selection-color: #646cff;
   --hover-color: #747bff;
+
+  /*
+   #d74a49, #183e4b, #1b4552, #8ba0a4 and #eaeaea.
+   */
+  --accent-colour: #d74a49;
+  --background-colour-main: #183e4b;
+  --background-colour-alt: #1b4552;
+  --panel-colour: #8ba0a4;
+  --text-colour: #eaeaea;
+
+  color: var(--text-colour);
+  background-color: var(--background-colour-main);
 }
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
 
 .selected {
-  color: var(--selection-color) !important;
-}
-
-.selected:hover {
-  color: var(--hover-color) !important;
+  color: var(--accent-colour) !important;
 }
 
 a {
@@ -89,16 +108,7 @@ button:focus-visible {
   width: 100%;
   background-color: initial;
 }
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.btn-item:hover {
+  border-color: var(--panel-colour);
 }
+

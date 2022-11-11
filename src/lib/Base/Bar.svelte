@@ -23,7 +23,7 @@
 </div>
 <style>
     .bar {
-        background-color: #213547;
+        background-color: var(--background-colour-alt);
         height: 64px;
         width: 100%;
         position: fixed;
