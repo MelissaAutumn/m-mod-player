@@ -13,8 +13,12 @@
     $playback_state = ($playback_state === 'playing') ? 'paused' : 'playing'
   }
 
+  const style = {
+    bottom: '64px'
+  }
+
 </script>
-<Bar position="bottom">
+<Bar position="bottom" style={style}>
     <button class="btn-item" on:click={onClick}>
         <Icon type={icon_playback_state}/>
     </button>
