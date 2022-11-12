@@ -1,33 +1,26 @@
 <script>
   import Page from "../Base/Page.svelte";
   import SongDB from "../../db.json"
-  import { selected_song_key, selected_category_key } from "../../model/player.js";
-  import {getContext} from "svelte";
 
+  export let song = null;
+  export let category = null;
 
-  const selected_song = getContext(selected_song_key);
-  const selected_category = getContext(selected_category_key);
-
-  const onSongSelect = (_song) => {
-    $selected_song = _song;
-  }
-
-  const songs = SongDB.Songs[$selected_category];
+  const songs = SongDB.Songs[category];
 </script>
 
 <Page>
     <div slot="header">
-        <h2>{$selected_category}</h2>
+        <h2>{category}</h2>
     </div>
     {#if songs}
         <table class="table">
             <tr role="rowheader">
                 <th>Name</th>
             </tr>
-        {#each songs as song, index}
+        {#each songs as _song, index}
             <tr role="row">
                 <td>
-                    <button on:click={() => onSongSelect(song)} class='btn-item' class:selected={$selected_song === song}>{song.split('/').splice(1).join('/')}</button>
+                    <button on:click={() => song = _song} class='btn-item' class:selected={song === _song}>{_song.split('/').splice(1).join('/')}</button>
                 </td>
             </tr>
         {/each}

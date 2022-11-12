@@ -1,12 +1,9 @@
 <script>
   import Page from "../Base/Page.svelte";
   import SongDB from "../../db.json"
-  import { selected_category_key } from "../../model/player.js";
-  import {getContext} from "svelte";
 
   const categories = SongDB.Songs;
-
-  const selected_category = getContext(selected_category_key);
+  export let category = null;
 
 </script>
 
@@ -19,10 +16,10 @@
             <tr role="rowheader">
                 <th>Name</th>
             </tr>
-            {#each Object.keys(categories) as category, index}
+            {#each Object.keys(categories) as _category, index}
                 <tr role="row">
                     <td>
-                        <button on:click={() => $selected_category = category} class='btn-item' class:selected={$selected_category === category}>{category.split('/').splice(0).join('/')}</button>
+                        <button on:click={() => category = _category} class='btn-item' class:selected={category === _category}>{_category.split('/').splice(0).join('/')}</button>
                     </td>
                 </tr>
             {/each}
