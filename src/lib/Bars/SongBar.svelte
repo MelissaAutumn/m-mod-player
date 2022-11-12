@@ -1,14 +1,15 @@
 <script>
   import Bar from "../Base/Bar.svelte";
   import Icon from "../Base/Icon.svelte";
+  import {playback_states} from "../../model/player.js";
 
   export let song = null;
-  export let playback_state = 'paused';
+  export let playback_state = playback_states.Paused;
 
-  $: icon_playback_state = (playback_state === 'playing') ? 'pause' : 'play';
+  $: icon_playback_state = (playback_state === playback_states.Playing) ? 'pause' : 'play';
 
   function onClick() {
-    playback_state = (playback_state === 'playing') ? 'paused' : 'playing'
+    playback_state = (playback_state === playback_states.Playing) ? playback_states.Paused : playback_states.Playing;
   }
 
   const style = {

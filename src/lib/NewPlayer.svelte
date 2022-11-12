@@ -1,12 +1,6 @@
 <script>
-  import {setContext} from "svelte";
-  import {writable} from 'svelte/store';
   import {
-    selected_song_key,
-    selected_sequence_key,
-    selected_category_key,
-    playback_state_key,
-    page_key, pages
+    pages, playback_states
   } from "../model/player.js";
   import SongBar from "./Bars/SongBar.svelte";
   import Songs from "./Pages/Songs.svelte";
@@ -14,34 +8,32 @@
   import MenuBar from "./Bars/MenuBar.svelte";
   import Categories from "./Pages/Categories.svelte";
 
-  // These are writable stores for ease of use.
-  // TODO: These no longer need to be stores!
-  const category = setContext(selected_category_key, writable(null));
-  const song = setContext(selected_song_key, writable(null));
-  const sequence = setContext(selected_sequence_key, writable(-1));
-  const playback_state = setContext(playback_state_key, writable('paused'));
-  const page = setContext(page_key, writable(pages.Categories));
+  let category = null;
+  let song = null;
+  let sequence = null;
+  let playback_state = playback_states.Paused;
+  let page = pages.Categories;
 
   // Reset selected sequence if selected song changes
-  $: if ($song) {
-    $sequence = -1;
+  $: if (song) {
+    sequence = -1;
   }
 
   // This isn't uhh..great.
-  $: if ($category) {
-    $page = pages.Songs;
+  $: if (category) {
+    page = pages.Songs;
   }
 
 </script>
 <div class="main">
-    <MenuBar bind:page={$page}/>
-    {#if $page === pages.Songs}
-    <Songs category={$category} bind:song={$song}/>
-    {:else if $page === pages.Categories}
-    <Categories bind:category={$category}/>
+    <MenuBar bind:page={page}/>
+    {#if page === pages.Songs}
+    <Songs category={category} bind:song={song}/>
+    {:else if page === pages.Categories}
+    <Categories bind:category={category}/>
     {/if}
-    <SongBar song={$song} bind:playback_state={$playback_state}/>
-    <OpenMPT song={$song} subsong={$sequence} isPlaying={$playback_state === 'playing'}/>
+    <SongBar song={song} bind:playback_state={playback_state}/>
+    <OpenMPT song={song} subsong={sequence} isPlaying={playback_state === playback_states.Playing}/>
 </div>
 <style>
     :root {
