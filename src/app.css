@@ -27,6 +27,8 @@
   --panel-colour: #8ba0a4;
   --text-colour: #eaeaea;
 
+  --button-padding: 0.6em 1.2em;
+
   color: var(--text-colour);
   background-color: var(--background-colour-main);
 }
@@ -87,7 +89,7 @@ h1 {
 button {
   border-radius: 8px;
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  padding: var(--button-padding);
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
@@ -107,6 +109,7 @@ button:focus-visible {
 .btn-item {
   width: 100%;
   background-color: initial;
+  padding: 0;
 }
 .btn-item:hover {
   border-color: var(--panel-colour);

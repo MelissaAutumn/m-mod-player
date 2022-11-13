@@ -1,39 +1,39 @@
 <script>
-  import Categories from "./Categories.svelte";
+  import {
+    pages, playback_states
+  } from "../model/player.js";
+  import SongBar from "./Bars/SongBar.svelte";
+  import Songs from "./Pages/Songs.svelte";
   import OpenMPT from "./OpenMPT.svelte";
-  import SongList from "./SongList.svelte";
-  import SongBar from "./SongBar.svelte";
-  import {setContext} from "svelte";
-  import { writable } from 'svelte/store';
-  import { selectedSongKey, selectedSubSongKey } from "../model/player.js";
+  import MenuBar from "./Bars/MenuBar.svelte";
+  import Categories from "./Pages/Categories.svelte";
 
-  let selectedCategory = null;
-  let isPlaying = false;
+  let category = null;
+  let song = null;
+  let sequence = null;
+  let playback_state = playback_states.Paused;
+  let page = pages.Categories;
 
-  const selectedSong = setContext(selectedSongKey, writable(null));
-  const selectedSubSong = setContext(selectedSubSongKey, writable(-1));
+  // Reset selected sequence if selected song changes
+  $: if (song) {
+    sequence = -1;
+  }
 
-  // Reset selected subsong if selected song changes
-  $: if ($selectedSong) {
-    $selectedSubSong = -1;
+  // This isn't uhh..great.
+  $: if (category) {
+    page = pages.Songs;
   }
 
 </script>
 <div class="main">
-    <div class="grid">
-        <OpenMPT subsong={$selectedSubSong} song={$selectedSong} isPlaying={isPlaying}/>
-        <div class="categories">
-            <h2>Categories</h2>
-            <Categories on:category-select={(evt) => selectedCategory = evt.detail.category}/>
-        </div>
-        <div class="song-list">
-            <h2>Songs</h2>
-            <SongList category={selectedCategory}/>
-        </div>
-        <div class="player-bar">
-            <SongBar on:playback={(evt) => isPlaying = evt.detail.state}/>
-        </div>
-    </div>
+    <MenuBar bind:page={page}/>
+    {#if page === pages.Songs}
+    <Songs category={category} bind:song={song}/>
+    {:else if page === pages.Categories}
+    <Categories bind:category={category}/>
+    {/if}
+    <SongBar song={song} bind:playback_state={playback_state}/>
+    <OpenMPT song={song} subsong={sequence} isPlaying={playback_state === playback_states.Playing}/>
 </div>
 <style>
     :root {
@@ -43,36 +43,5 @@
 
     .main {
         display: block;
-    }
-
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(var(--min-card-width), 2fr));
-        grid-column-gap: var(--spacing);
-        grid-row-gap: var(--spacing);
-
-    }
-
-    .categories {
-        height: 80vh;
-        display: inline-grid;
-        grid-column-end: auto;
-        grid-row: 1;
-        background-color: var(--background-color-main);
-        border-radius: 8px;
-    }
-
-    .song-list {
-        display: inline-grid;
-        overflow: scroll;
-        grid-row: span 2;
-        height: 80vh;
-        background-color: var(--background-color-main);
-
-        border-radius: 8px;
-    }
-
-    .player-bar {
-        /* moved inside component */
     }
 </style>

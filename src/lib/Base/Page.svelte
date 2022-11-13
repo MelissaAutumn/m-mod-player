@@ -16,10 +16,6 @@
         width: 100%;
     }
 
-    .header-and-footer {
-        background-color: var(--background-color-alt);
-    }
-
     .content {
         background-color: var(--background-color-main);
     }

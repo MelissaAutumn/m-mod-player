@@ -24,6 +24,7 @@
 <style>
     .bar {
         background-color: var(--background-colour-alt);
+        border-top: var(--panel-colour) 2px solid;
         height: 64px;
         width: 100%;
         position: fixed;

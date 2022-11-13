@@ -14,13 +14,10 @@
     </div>
     {#if songs}
         <table class="table">
-            <tr role="rowheader">
-                <th>Name</th>
-            </tr>
         {#each songs as _song, index}
             <tr role="row">
                 <td>
-                    <button on:click={() => song = _song} class='btn-item' class:selected={song === _song}>{_song.split('/').splice(1).join('/')}</button>
+                    <button on:click={() => song = _song} class='btn-item btn-song' class:selected={song === _song}>{_song.split('/').splice(1).join('/')}</button>
                 </td>
             </tr>
         {/each}
@@ -48,9 +45,10 @@
     th {
         padding: 0.6em 1.2em;
     }
-    button {
+    .btn-song {
         width: 100%;
         overflow: visible;
         text-align: left;
+        padding: var(--button-padding);
     }
 </style>

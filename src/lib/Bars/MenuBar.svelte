@@ -7,7 +7,8 @@
   export let page = pages.Categories;
 </script>
 
-<Bar  position="bottom">
+<div class="wrapper">
+<Bar position="bottom">
     <button class:selected={page === pages.Categories} class="btn-item" on:click={() => page = pages.Categories}>
         <Icon type="list"></Icon>
     </button>
@@ -18,6 +19,7 @@
         <Icon type="queue"></Icon>
     </button>
 </Bar>
+</div>
 
 <style>
 

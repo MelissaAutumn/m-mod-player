@@ -1,5 +1,5 @@
 <script>
-import Player from "./lib/NewPlayer.svelte";
+import Player from "./lib/Player.svelte";
 </script>
 
 <main>

@@ -12,8 +12,9 @@
     playback_state = (playback_state === playback_states.Playing) ? playback_states.Paused : playback_states.Playing;
   }
 
+  // Account for padding
   const style = {
-    bottom: '64px'
+    bottom: '66px'
   }
 
 </script>
@@ -21,7 +22,7 @@
     <button class="btn-item" on:click={onClick}>
         <Icon type={icon_playback_state}/>
     </button>
-    <span class="title">{song ?? ''}</span>
+    <span class="title">{song?.split('/').splice(1).join('/') ?? ''}</span>
     <span><Icon type="up"/></span>
 </Bar>
 

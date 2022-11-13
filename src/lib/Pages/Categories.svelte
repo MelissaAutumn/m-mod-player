@@ -13,13 +13,10 @@
     </div>
     {#if categories}
         <table class="table">
-            <tr role="rowheader">
-                <th>Name</th>
-            </tr>
             {#each Object.keys(categories) as _category, index}
                 <tr role="row">
                     <td>
-                        <button on:click={() => category = _category} class='btn-item' class:selected={category === _category}>{_category.split('/').splice(0).join('/')}</button>
+                        <button on:click={() => category = _category} class='btn-item btn-category' class:selected={category === _category}>{_category.split('/').splice(0).join('/')}</button>
                     </td>
                 </tr>
             {/each}
@@ -47,9 +44,10 @@
     th {
         padding: 0.6em 1.2em;
     }
-    button {
+    .btn-category {
         width: 100%;
         overflow: visible;
         text-align: left;
+        padding: var(--button-padding);
     }
 </style>
