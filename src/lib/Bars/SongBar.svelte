@@ -2,6 +2,7 @@
   import Bar from "../Base/Bar.svelte";
   import Icon from "../Base/Icon.svelte";
   import {playback_states} from "../../model/player.js";
+  import {song_metadata} from "../../stores/openmptStore.js";
 
   export let song = null;
   export let playback_state = playback_states.Paused;
@@ -17,7 +18,7 @@
     <button class="btn-item btn-no-radius" on:click={onClick}>
         <Icon type={icon_playback_state}/>
     </button>
-    <span class="title">{song?.split('/').splice(1).join('/') ?? ''}</span>
+    <span class="title">{$song_metadata.title ?? ''}</span>
     <span><Icon type="up"/></span>
 </Bar>
 

@@ -1,41 +1,32 @@
 <script>
-  import {selectedSongKey, selectedSubSongKey} from "../model/player.js";
-  import {getContext} from "svelte";
+  import {song_metadata} from "../stores/openmptStore.js";
 
-  const selectedSong = getContext(selectedSongKey);
-  if (!selectedSong) {
-    console.warn(`No ${selectedSongKey.description} context!`);
-  }
-  const selectedSubsong = getContext(selectedSubSongKey);
-  if (!selectedSubsong) {
-    console.warn(`No ${selectedSubSongKey.description} context!`);
-  }
+  export let song = null;
+  export let sequence = null;
+  export let category = null;
+  export let is_playing = false;
 
-  const onMediaChange = (category, song, subsong) => {
-    if (!navigator.mediaSession) {
+  const media_session = navigator?.mediaSession;
+
+  const onMediaChange = (category, song, sequence) => {
+    if (!media_session) {
       return;
     }
 
-    const sequenceName = subsong === -1 ? 'All' : subsong;
-    navigator.mediaSession.metadata = new MediaMetadata({
+    const sequence_name = sequence === -1 ? 'All' : sequence;
+    media_session.metadata = new MediaMetadata({
       album: category,
       artist: '',
-      title: `${song} | Sequence ${sequenceName}`,
+      title: `${$song_metadata.title} | Sequence ${sequence_name}`,
       artwork: [],
     });
-
-
-    console.log("New media session", navigator.mediaSession.metadata);
   }
 
-  $: onMediaChange("", $selectedSong, $selectedSubsong);
-</script>
-<div>
-    
-</div>
+  $: if ($song_metadata.title) {
+    onMediaChange(category, song, sequence)
+  }
 
-<style>
-    div {
-        display: none;
-    }
-</style>
+  $: {
+    media_session.playbackState = is_playing ? "playing" : "paused";
+  }
+</script>

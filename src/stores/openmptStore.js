@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 /**
  * Song meta data from libopenmpt. These values are strings.
  */
-export const songMetadata = writable({
+export const song_metadata = writable({
   type: null,
   typeLong: null,
   originalType: null,
@@ -18,6 +18,6 @@ export const songMetadata = writable({
   messageRaw: null,
   warnings: null,
 });
-export const subSongData = writable([
+export const sequence_data = writable([
 
 ]);

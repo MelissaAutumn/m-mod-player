@@ -1,12 +1,15 @@
 <script>
   import {onDestroy, onMount} from 'svelte';
-  import {songMetadata, subSongData} from "../stores/openmptStore.js";
+  import {song_metadata, sequence_data} from "../stores/openmptStore.js";
+  import MediaSession from "./MediaSession.svelte";
 
   let loopMode = true;
   let processorNode = null;
   let audioWorkletModule = null;
+  export let audio_element = null;
   export let song = null;
-  export let subsong = -1;
+  export let sequence = -1;
+  export let category = null;
   export let isPlaying = false;
 
   // No hot reloading here!
@@ -16,7 +19,8 @@
 
   onDestroy(() => stopProcessor(''));
 
-  const audioContext = new AudioContext();
+  const audio_context = new AudioContext();
+  let media_stream = null;
 
   const stopProcessor = (_) => {
     console.log("Cleaning up previous processor");
@@ -25,7 +29,7 @@
 
     if (processorNode) {
       processorNode.port.postMessage({
-        type: "dispose2",
+        type: "dispose",
         value: null,
       });
 
@@ -36,23 +40,23 @@
 
   onMount(() => {
     if (!audioWorkletModule) {
-      audioWorkletModule = audioContext.audioWorklet.addModule("worklet/openmpt.worklet.js");
+      audioWorkletModule = audio_context.audioWorklet.addModule("worklet/openmpt.worklet.js");
     }
 
     audioWorkletModule.then(() => {
       processorNode = new AudioWorkletNode(
-        audioContext,
+        audio_context,
         "libopenmpt-processor",
         {
           numberOfInputs: 0,
           numberOfOutputs: 1,
           outputChannelCount: [2],
           processorOptions: {
-            sampleRate: audioContext.sampleRate,
+            sampleRate: audio_context.sampleRate,
           },
         }
       );
-      processorNode.connect(audioContext.destination);
+      processorNode.connect(audio_context.destination);
       processorNode.port.onmessage = ((evt) => {
         if (!evt.data.type) {
           return;
@@ -62,7 +66,7 @@
           case 'metadata':
             const metadata = evt.data.value;
             // I could probably just remap keys easily, but eh this works for now
-            songMetadata.set({
+            song_metadata.set({
               type: metadata?.type,
               typeLong: metadata?.type_long,
               originalType: metadata?.originaltype,
@@ -79,12 +83,17 @@
             });
             break;
           case 'subsongs':
-            subSongData.set(evt.data.value);
+            sequence_data.set(evt.data.value);
             break;
         }
       });
 
-      audioContext.suspend();
+      audio_context.suspend();
+
+      // Create a destination, and give it to our audio element
+      media_stream = audio_context.createMediaStreamDestination();
+      audio_element.srcObject = media_stream.stream;
+
     })
   });
 
@@ -113,7 +122,18 @@
   }
 
   const handlePlayback = (isPlaying) => {
-    isPlaying ? audioContext.resume() : audioContext.suspend();
+    isPlaying ? audio_context.resume() : audio_context.suspend();
+
+    // Also toggle audio element's play/pause
+    if (!audio_element) {
+      return;
+    }
+
+    if (isPlaying) {
+      audio_element.play();
+    } else {
+      audio_element.pause();
+    }
   }
 
   const handleSubsong = (index) => {
@@ -164,7 +184,7 @@
   }
 
   $: {
-    handleSubsong(subsong);
+    handleSubsong(sequence);
   }
 
   $: {

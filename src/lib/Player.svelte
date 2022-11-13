@@ -7,12 +7,14 @@
   import OpenMPT from "./OpenMPT.svelte";
   import MenuBar from "./Bars/MenuBar.svelte";
   import Categories from "./Pages/Categories.svelte";
+  import MediaSession from "./MediaSession.svelte";
 
   let category = null;
   let song = null;
   let sequence = null;
   let playback_state = playback_states.Paused;
   let page = pages.Categories;
+  let audio_element = null;
 
   // Reset selected sequence if selected song changes
   $: if (song) {
@@ -22,6 +24,10 @@
   // This isn't uhh..great.
   $: if (category) {
     page = pages.Songs;
+  }
+
+  const onAudioPlaybackChange = (is_playing) => {
+    playback_state = is_playing ? playback_states.Playing : playback_states.Paused;
   }
 
 </script>
@@ -35,7 +41,10 @@
         <MenuBar bind:page={page}/>
         <SongBar song={song} bind:playback_state={playback_state}/>
     </div>
-    <OpenMPT song={song} subsong={sequence} isPlaying={playback_state === playback_states.Playing}/>
+    <OpenMPT category={category} song={song} sequence={sequence} isPlaying={playback_state === playback_states.Playing} audio_element={audio_element}/>
+    <!-- Allows media meta data, need to split up later -->
+    <MediaSession category={category} song={song} sequence={sequence} is_playing={playback_state === playback_states.Playing}/>
+    <audio on:play={() => onAudioPlaybackChange(true)} on:pause={()=> onAudioPlaybackChange(false)} bind:this={audio_element} controls></audio>
 </div>
 <style>
     :root {
@@ -54,4 +63,12 @@
         left: 0;
         bottom: 0;
     }
+
+     audio {
+         display: block;
+         position: fixed;
+         top: 0;
+
+     }
+
 </style>
