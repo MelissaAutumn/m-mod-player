@@ -7,24 +7,24 @@
   export let page = pages.Categories;
 </script>
 
-<div class="wrapper">
+
 <Bar position="bottom">
-    <button class:selected={page === pages.Categories} class="btn-item" on:click={() => page = pages.Categories}>
+    <button class:selected={page === pages.Categories} class="btn-item btn-no-radius" on:click={() => page = pages.Categories}>
         <Icon type="list"></Icon>
     </button>
-    <button class:selected={page === pages.Songs} class="btn-item" on:click={() => page = pages.Songs}>
+    <button class:selected={page === pages.Songs} class="btn-item btn-no-radius" on:click={() => page = pages.Songs}>
         <Icon type="play-filled"></Icon>
     </button>
-    <button class:selected={page === pages.Queue} class="btn-item" on:click={() => page = pages.Queue}>
+    <button class:selected={page === pages.Queue} class="btn-item btn-no-radius" on:click={() => page = pages.Queue}>
         <Icon type="queue"></Icon>
     </button>
 </Bar>
-</div>
 
 <style>
 
     .selected {
         background-color: var(--accent-colour);
     }
+
 
 </style>

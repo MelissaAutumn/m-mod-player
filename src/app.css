@@ -114,4 +114,6 @@ button:focus-visible {
 .btn-item:hover {
   border-color: var(--panel-colour);
 }
-
+.btn-no-radius {
+  border-radius: 0;
+}

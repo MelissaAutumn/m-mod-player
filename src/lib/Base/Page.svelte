@@ -12,8 +12,11 @@
 
 <style>
     .page {
-        height: 100vh;
+        min-height: 100vh;
+        height: 100%;
         width: 100%;
+        /* Hardcoded for now! */
+        margin-bottom: 15%;
     }
 
     .content {

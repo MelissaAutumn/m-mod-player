@@ -26,13 +26,15 @@
 
 </script>
 <div class="main">
-    <MenuBar bind:page={page}/>
     {#if page === pages.Songs}
     <Songs category={category} bind:song={song}/>
     {:else if page === pages.Categories}
     <Categories bind:category={category}/>
     {/if}
-    <SongBar song={song} bind:playback_state={playback_state}/>
+    <div class="fixed-overlay">
+        <MenuBar bind:page={page}/>
+        <SongBar song={song} bind:playback_state={playback_state}/>
+    </div>
     <OpenMPT song={song} subsong={sequence} isPlaying={playback_state === playback_states.Playing}/>
 </div>
 <style>
@@ -43,5 +45,13 @@
 
     .main {
         display: block;
+    }
+
+    .fixed-overlay {
+        width: 100%;
+        position: fixed;
+        display: grid;
+        left: 0;
+        bottom: 0;
     }
 </style>
