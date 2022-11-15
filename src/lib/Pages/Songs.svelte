@@ -1,9 +1,18 @@
 <script>
   import Page from "../Base/Page.svelte";
   import SongDB from "../../db.json"
+  import {createEventDispatcher} from "svelte";
 
   export let song = null;
   export let category = null;
+
+  const dispatch = createEventDispatcher()
+
+  const onSelect = (song) => {
+    dispatch('song-select', {
+      song: song,
+    })
+  }
 
   const songs = SongDB.Songs[category];
 </script>
@@ -17,7 +26,7 @@
         {#each songs as _song, index}
             <tr role="row">
                 <td>
-                    <button on:click={() => song = _song} class='btn-item btn-song' class:selected={song === _song}>{_song.split('/').splice(1).join('/')}</button>
+                    <button on:click={() => onSelect(_song)} class='btn-item btn-song' class:selected={song === _song}>{_song.split('/').splice(1).join('/')}</button>
                 </td>
             </tr>
         {/each}

@@ -26,25 +26,49 @@
     page = pages.Songs;
   }
 
-  const onAudioPlaybackChange = (is_playing) => {
-    playback_state = is_playing ? playback_states.Playing : playback_states.Paused;
+  // Event handlers
+  const onSongSelect = (evt) => {
+    song = evt.detail?.song;
+  }
+  const onCategorySelect = (evt) => {
+    category = evt.detail?.category;
+  }
+  const onPlaybackState = (evt) => {
+    console.log("Playback", evt);
+    playback_state = evt.detail?.playback_state;
+  }
+  const onPageChange = (evt) => {
+    page = evt.detail?.page;
+  }
+  const onAudioToggle = (state) => {
+    playback_state = state;
   }
 
 </script>
 <div class="main">
+    <!-- Pages -->
     {#if page === pages.Songs}
-    <Songs category={category} bind:song={song}/>
+        <Songs
+            on:song-select={onSongSelect}
+            category={category}
+        />
     {:else if page === pages.Categories}
-    <Categories bind:category={category}/>
+        <Categories
+            on:category-select={onCategorySelect}
+        />
     {/if}
+
+    <!-- Bottom Bar -->
     <div class="fixed-overlay">
-        <MenuBar bind:page={page}/>
-        <SongBar song={song} bind:playback_state={playback_state}/>
+        <MenuBar on:page-change={onPageChange} page={page} />
+        <SongBar on:playback-state={onPlaybackState} song={song} playback_state={playback_state} />
     </div>
+
+    <!-- "Invisible" media comps -->
     <OpenMPT category={category} song={song} sequence={sequence} isPlaying={playback_state === playback_states.Playing} audio_element={audio_element}/>
     <!-- Allows media meta data, need to split up later -->
     <MediaSession category={category} song={song} sequence={sequence} is_playing={playback_state === playback_states.Playing}/>
-    <audio on:play={() => onAudioPlaybackChange(true)} on:pause={()=> onAudioPlaybackChange(false)} bind:this={audio_element} controls></audio>
+    <audio on:play={() => onAudioToggle(playback_states.Playing)} on:pause={()=> onAudioToggle(playback_states.Paused)} bind:this={audio_element} controls></audio>
 </div>
 <style>
     :root {

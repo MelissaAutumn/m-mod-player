@@ -1,9 +1,17 @@
 <script>
   import Page from "../Base/Page.svelte";
   import SongDB from "../../db.json"
+  import {createEventDispatcher} from "svelte";
 
   const categories = SongDB.Songs;
   export let category = null;
+
+  const dispatch = createEventDispatcher()
+  const onSelect = (category) => {
+    dispatch('category-select', {
+      category: category,
+    })
+  }
 
 </script>
 
@@ -16,7 +24,7 @@
             {#each Object.keys(categories) as _category, index}
                 <tr role="row">
                     <td>
-                        <button on:click={() => category = _category} class='btn-item btn-category' class:selected={category === _category}>{_category.split('/').splice(0).join('/')}</button>
+                        <button on:click={() => onSelect(_category)} class='btn-item btn-category' class:selected={category === _category}>{_category.split('/').splice(0).join('/')}</button>
                     </td>
                 </tr>
             {/each}
