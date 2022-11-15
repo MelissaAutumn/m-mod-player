@@ -34,12 +34,12 @@
     category = evt.detail?.category;
   }
   const onPlaybackState = (evt) => {
-    console.log("Playback", evt);
     playback_state = evt.detail?.playback_state;
   }
   const onPageChange = (evt) => {
     page = evt.detail?.page;
   }
+  // For audio element only!
   const onAudioToggle = (state) => {
     playback_state = state;
   }
