@@ -14,3 +14,7 @@ Note: I use the term Sequence on the front-end to mean a Sub Song.
 Right now we just read off of a json file. It's not great, but it does the job for now. 
 
 To generate this db file, put your module files in `public/data/modules` (they can have sub-folders!), and run the index_modules script from the project root. (So `node scripts/index_modules.js`.)
+
+## License
+
+Project code that was written by me is subject to the license listed in `/LICENSE`. Additional third party library licenses can be found under the `/license/` folder. 
