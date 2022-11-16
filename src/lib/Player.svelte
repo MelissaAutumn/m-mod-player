@@ -16,11 +16,6 @@
   let page = pages.Categories;
   let audio_element = null;
 
-  // Reset selected sequence if selected song changes
-  $: if (song) {
-    sequence = -1;
-  }
-
   // This isn't uhh..great.
   $: if (category) {
     page = pages.Songs;
@@ -33,6 +28,7 @@
   // Event handlers
   const onSongSelect = (evt) => {
     song = evt.detail?.song;
+    sequence = evt.detail?.sequence ?? -1;
   }
   const onCategorySelect = (evt) => {
     category = evt.detail?.category;
@@ -54,6 +50,7 @@
     {#if page === pages.Songs}
         <Songs
             on:song-select={onSongSelect}
+            sequence={sequence}
             category={category}
             song={song}
         />

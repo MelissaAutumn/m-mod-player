@@ -23,3 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
+# Ignore the db.json
+src/db.json

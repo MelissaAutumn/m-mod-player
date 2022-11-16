@@ -12,6 +12,8 @@
   export let category = null;
   export let isPlaying = false;
 
+  let current_song = null;
+
   // No hot reloading here!
   if (import.meta.hot) {
     import.meta.hot.decline();
@@ -106,6 +108,8 @@
       type: 'data',
       value: buffer,
     });
+
+    current_song = song;
   }
 
   const toggleLoopMode = () => {
@@ -144,7 +148,7 @@
     console.log("Handle subsong");
 
     processorNode.port.postMessage({
-      type: 'subsong',
+      type: 'sequence',
       value: index
     });
   }
@@ -154,7 +158,7 @@
       return;
     }
 
-    const input = ["/data/modules/", song].join('/');//"/data/modules/space_debris.mod";
+    const input = song.full_path;
 
     let xhr = new XMLHttpRequest();
     // Mel: Need to encode the uri else we'll fail on hashes!
@@ -178,16 +182,12 @@
     xhr.send();
   }
 
-  $: {
-    //stopProcessor(song);
-    LoadFile(song, onLoad);
-  }
-
-  $: {
+  $: LoadFile(song, onLoad);
+  $: if (song === current_song) {
     handleSubsong(sequence);
   }
+  $: handlePlayback(isPlaying);
 
-  $: {
-    handlePlayback(isPlaying);
-  }
+
+
 </script>

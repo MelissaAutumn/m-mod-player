@@ -197,7 +197,7 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
         evt.data.value = null;
       }
         break;
-      case "subsong":
+      case "sequence":
         this.setSubsong(evt.data.value);
         break;
       case "loop":

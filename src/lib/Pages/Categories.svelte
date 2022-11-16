@@ -3,7 +3,7 @@
   import SongDB from "../../db.json"
   import {createEventDispatcher} from "svelte";
 
-  const categories = SongDB.Songs;
+  const categories = SongDB;
   export let category = null;
 
   const dispatch = createEventDispatcher()
