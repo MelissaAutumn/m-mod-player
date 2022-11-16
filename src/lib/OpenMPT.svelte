@@ -1,6 +1,13 @@
 <script>
   import {onDestroy, onMount} from 'svelte';
-  import {song_metadata, sequence_data, patterns, current_row, current_pattern} from "../stores/openmptStore.js";
+  import {
+    song_metadata,
+    sequence_data,
+    patterns,
+    current_row,
+    current_pattern,
+    next_pattern
+  } from "../stores/openmptStore.js";
 
   let loopMode = true;
   let processorNode = null;
@@ -92,6 +99,7 @@
           case 'current_data':
             current_row.set(evt.data.row);
             current_pattern.set(evt.data.pattern);
+            next_pattern.set(evt.data.next_pattern);
             break;
         }
       });

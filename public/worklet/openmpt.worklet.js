@@ -4440,6 +4440,11 @@
     subSongs = [];
     commandData = [];
 
+    currentPattern = 0;
+    currentOrder = 0;
+    orderCount = 0;
+
+
     constructor(options) {
       super();
 
@@ -4622,10 +4627,14 @@
         type: 'patterns',
         value: command_data
       });
+
+      this.orderCount = this._libopenmpt._openmpt_module_get_num_orders(this.modulePtr);
+
+      this.currentPattern = 0;
+      this.currentOrder = 0;
     }
 
     process(inputs, outputs, parameters) {
-      //return true;
       if (!this.modulePtr || !this.leftBufferPtr || !this.rightBufferPtr) {
         this.destruct();
         return false;
@@ -4647,11 +4656,14 @@
         outputs[0][0][i] = rawAudioLeft[i];
         outputs[0][1][i] = rawAudioRight[i];
       }
+      const current_order = this._libopenmpt._openmpt_module_get_current_order(this.modulePtr);
+      const next_order = current_order + 1;
+      const pattern = this._libopenmpt._openmpt_module_get_current_pattern(this.modulePtr);
+      const next_pattern = this._libopenmpt._openmpt_module_get_order_pattern(this.modulePtr, next_order < this.orderCount ? next_order : 0);
 
-
-      // Send over the current pattern/row
       this.port.postMessage({
-        pattern: this._libopenmpt._openmpt_module_get_current_pattern(this.modulePtr),
+        pattern: pattern,
+        next_pattern: next_pattern,
         row: this._libopenmpt._openmpt_module_get_current_row(this.modulePtr),
         type: 'current_data'
       });

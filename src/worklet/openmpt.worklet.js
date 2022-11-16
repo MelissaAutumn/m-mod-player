@@ -138,6 +138,11 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
   subSongs = [];
   commandData = [];
 
+  currentPattern = 0;
+  currentOrder = 0;
+  orderCount = 0;
+
+
   constructor(options) {
     super();
 
@@ -319,11 +324,15 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
     this.port.postMessage({
       type: 'patterns',
       value: command_data
-    })
+    });
+
+    this.orderCount = this._libopenmpt._openmpt_module_get_num_orders(this.modulePtr);
+
+    this.currentPattern = 0;
+    this.currentOrder = 0;
   }
 
   process(inputs, outputs, parameters) {
-    //return true;
     if (!this.modulePtr || !this.leftBufferPtr || !this.rightBufferPtr) {
       this.destruct();
       return false;
@@ -347,9 +356,22 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
     }
 
 
-    // Send over the current pattern/row
+    let log = false;
+    const current_order = this._libopenmpt._openmpt_module_get_current_order(this.modulePtr);
+    const next_order = current_order + 1;
+    const pattern = this._libopenmpt._openmpt_module_get_current_pattern(this.modulePtr);
+    const next_pattern = this._libopenmpt._openmpt_module_get_order_pattern(this.modulePtr, next_order < this.orderCount ? next_order : 0);
+
+    if (log) {
+      console.log("Current order index", this.currentOrder);
+      console.log("Next order index", next_order);
+      console.log("Current pattern", this.currentPattern);
+      console.log("Next pattern", next_pattern);
+    }
+
     this.port.postMessage({
-      pattern: this._libopenmpt._openmpt_module_get_current_pattern(this.modulePtr),
+      pattern: pattern,
+      next_pattern: next_pattern,
       row: this._libopenmpt._openmpt_module_get_current_row(this.modulePtr),
       type: 'current_data'
     });

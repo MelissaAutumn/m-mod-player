@@ -20,7 +20,7 @@
   const songs = SongDB[category].sort((a, b) => {
     const title_a = a?.meta_data?.title ?? a.file_name;
     const title_b = b?.meta_data?.title ?? b.file_name;
-    return title_a.trim() > title_b.trim();
+    return title_a.trim().toUpperCase() > title_b.trim().toUpperCase();
   });
 </script>
 
