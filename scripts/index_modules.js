@@ -196,7 +196,8 @@ const main = () => {
     }
   }
 
-  const song_data = {};
+  const category_data = {};
+  let total_songs = 0;
 
   // Retrieve all of the meta data
   for (const index in modules_to_index) {
@@ -212,19 +213,29 @@ const main = () => {
       continue;
     }
 
-    song_data[module_path] = {
-      file_name: module_path.split('/').splice(-1)[0],
-      category: module_path.split('/').splice(-2)[0],
+    // If we're the module_folder, they go under "Unsorted".
+    const category = module_path.split('/').slice(0, -1).join('/') === module_folder ? 'Unsorted' : module_path.split('/').slice(-2)[0];
+
+    if (!category_data[category]) {
+      category_data[category] = [];
+    }
+
+    category_data[category].push({
+      full_path: module_path,
+      file_name: module_path.split('/').slice(-1)[0],
+      category: category,
       meta_data: retrieve_meta_data(ptr),
       sequences: retrieve_sequences(ptr),
-    }
+    });
+
+    total_songs++;
 
     // Okay clean it up
     delete_module_ptr(ptr, buffer_ptr);
   }
 
-  console.log("Retrieved and indexed ", Object.keys(song_data).length, " module files.");
-  writeFileSync('./src/db.json', JSON.stringify(song_data));
+  console.log("Retrieved and indexed ", total_songs, " module files.");
+  writeFileSync('./src/db.json', JSON.stringify(category_data));
   console.log("Song database written to /src/db.json");
 };
 
