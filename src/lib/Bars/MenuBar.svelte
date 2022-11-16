@@ -25,7 +25,7 @@
     <button class:selected={page === pages.Songs} class="btn-item btn-no-radius" on:click={() => onPageChange(pages.Songs)}>
         <Icon type="play-filled"></Icon>
     </button>
-    <button class:selected={page === pages.Queue} class="btn-item btn-no-radius" on:click={() => onPageChange(pages.Queue)}>
+    <button class:selected={page === pages.Patterns} class="btn-item btn-no-radius" on:click={() => onPageChange(pages.Patterns)}>
         <Icon type="queue"></Icon>
     </button>
 </Bar>

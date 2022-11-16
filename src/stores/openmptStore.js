@@ -21,3 +21,7 @@ export const song_metadata = writable({
 export const sequence_data = writable([
 
 ]);
+export const patterns = writable([]);
+
+export const current_pattern = writable(0);
+export const current_row = writable(0);

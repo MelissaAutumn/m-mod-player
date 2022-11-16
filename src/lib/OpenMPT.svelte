@@ -1,7 +1,6 @@
 <script>
   import {onDestroy, onMount} from 'svelte';
-  import {song_metadata, sequence_data} from "../stores/openmptStore.js";
-  import MediaSession from "./MediaSession.svelte";
+  import {song_metadata, sequence_data, patterns, current_row, current_pattern} from "../stores/openmptStore.js";
 
   let loopMode = true;
   let processorNode = null;
@@ -86,6 +85,13 @@
             break;
           case 'subsongs':
             sequence_data.set(evt.data.value);
+            break;
+          case 'patterns':
+            patterns.set(evt.data.value);
+            break;
+          case 'current_data':
+            current_row.set(evt.data.row);
+            current_pattern.set(evt.data.pattern);
             break;
         }
       });

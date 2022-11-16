@@ -8,6 +8,7 @@
   import MenuBar from "./Bars/MenuBar.svelte";
   import Categories from "./Pages/Categories.svelte";
   import MediaSession from "./MediaSession.svelte";
+  import Patterns from "./Pages/Patterns.svelte";
 
   let category = null;
   let song = null;
@@ -59,6 +60,10 @@
             on:category-select={onCategorySelect}
             category={category}
         />
+    {:else if page === pages.Patterns}
+        <Patterns
+            />
+
     {/if}
 
     <!-- Bottom Bar -->

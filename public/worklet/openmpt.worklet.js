@@ -4438,6 +4438,7 @@
 
     songMetaData = {};
     subSongs = [];
+    commandData = [];
 
     constructor(options) {
       super();
@@ -4494,6 +4495,7 @@
             this.setLoopMode(this.looping);
             this.retrieveMetaData();
             this.retrieveSubSongs();
+            this.getTrack();
           }
 
           evt.data.value = null;
@@ -4536,10 +4538,8 @@
       const data = [];
 
       for (let i = 0; i < count; i++) {
-        const allocStrName = Utility.asciiToStack(this._libopenmpt, i);
-        let name = Utility.UTF8ToString(this._libopenmpt, this._libopenmpt._openmpt_module_get_subsong_name(this.modulePtr, allocStrName));
+        let name = Utility.UTF8ToString(this._libopenmpt, this._libopenmpt._openmpt_module_get_subsong_name(this.modulePtr, i));
         data.push(name.length === 0 ? ["Sequence", i+1].join(' ') : name);
-        this._libopenmpt._free(allocStrName);
       }
 
       // Keep a local copy
@@ -4580,6 +4580,50 @@
       }
     }
 
+
+
+    getTrack() {
+      const channel_count = this._libopenmpt._openmpt_module_get_num_channels(this.modulePtr);
+
+      const pattern_count = this._libopenmpt._openmpt_module_get_num_patterns(this.modulePtr);
+      const command_data = [];
+
+      for (let i = 0; i < pattern_count; i++) {
+        const pattern_data = [];
+        //let name = Utility.UTF8ToString(this._libopenmpt, this._libopenmpt._openmpt_module_get_pattern_name(this.modulePtr, i));
+        const pattern_rows = this._libopenmpt._openmpt_module_get_pattern_num_rows(this.modulePtr, i);
+
+
+        /*
+         	int32_t  	pattern,
+  		int32_t  	row,
+  		int32_t  	channel,
+  		size_t  	width,
+  		int  	pad
+         */
+        for (let j = 0; j < pattern_rows; j++) {
+          const row_commands = [];
+          for (let k = 0; k < channel_count; k++) {
+            const command = Utility.UTF8ToString(this._libopenmpt, this._libopenmpt._openmpt_module_format_pattern_row_channel(this.modulePtr, i, j, k, 1024, 0));
+            row_commands.push(command);
+          }
+          pattern_data.push(row_commands);
+        }
+
+        command_data.push(pattern_data);
+      }
+
+      //console.log("Patterns!");
+      //console.log(command_data);
+
+      this.commandData = command_data;
+
+      this.port.postMessage({
+        type: 'patterns',
+        value: command_data
+      });
+    }
+
     process(inputs, outputs, parameters) {
       //return true;
       if (!this.modulePtr || !this.leftBufferPtr || !this.rightBufferPtr) {
@@ -4603,6 +4647,15 @@
         outputs[0][0][i] = rawAudioLeft[i];
         outputs[0][1][i] = rawAudioRight[i];
       }
+
+
+      // Send over the current pattern/row
+      this.port.postMessage({
+        pattern: this._libopenmpt._openmpt_module_get_current_pattern(this.modulePtr),
+        row: this._libopenmpt._openmpt_module_get_current_row(this.modulePtr),
+        type: 'current_data'
+      });
+
 
       return true;
     }
