@@ -4,8 +4,8 @@
 
 
   // Grab the current pattern
-  $: pattern = $patterns[$current_pattern].slice($current_row);
-  $: channels = pattern[0]?.length;
+  $: pattern_data = $patterns[$current_pattern].slice($current_row);
+  $: channels = pattern_data[0]?.length;
 
 </script>
 
@@ -19,7 +19,7 @@
     {#if $patterns}
         <table class="table">
             <tr style="grid-template-columns: repeat({channels} , 1fr)">
-                {#each pattern as _row, index}
+                {#each pattern_data as _row, index}
                     {#each _row as _pattern}
                         <td>
                             {_pattern}
