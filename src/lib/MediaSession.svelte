@@ -26,7 +26,7 @@
     onMediaChange(category, song, sequence)
   }
 
-  $: {
+  $: if (media_session) {
     media_session.playbackState = is_playing ? "playing" : "paused";
   }
 </script>
