@@ -6,7 +6,7 @@
     patterns,
     current_row,
     current_pattern,
-    next_pattern
+    next_pattern, highlights
   } from "../stores/openmptStore.js";
 
   let loopMode = true;
@@ -94,7 +94,8 @@
             sequence_data.set(evt.data.value);
             break;
           case 'patterns':
-            patterns.set(evt.data.value);
+            patterns.set(evt.data.pattern);
+            highlights.set(evt.data.highlight);
             break;
           case 'current_data':
             current_row.set(evt.data.row);

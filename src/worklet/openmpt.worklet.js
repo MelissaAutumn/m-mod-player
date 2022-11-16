@@ -290,9 +290,11 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
 
     const pattern_count = this._libopenmpt._openmpt_module_get_num_patterns(this.modulePtr);
     const command_data = [];
+    const highlight_data = [];
 
     for (let i = 0; i < pattern_count; i++) {
       const pattern_data = [];
+      const pattern_highlight_data = [];
       //let name = Utility.UTF8ToString(this._libopenmpt, this._libopenmpt._openmpt_module_get_pattern_name(this.modulePtr, i));
       const pattern_rows = this._libopenmpt._openmpt_module_get_pattern_num_rows(this.modulePtr, i);
 
@@ -306,14 +308,19 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
        */
       for (let j = 0; j < pattern_rows; j++) {
         const row_commands = [];
+        const row_highlight = [];
         for (let k = 0; k < channel_count; k++) {
           const command = Utility.UTF8ToString(this._libopenmpt, this._libopenmpt._openmpt_module_format_pattern_row_channel(this.modulePtr, i, j, k, 1024, 0));
+          const highlight_command = Utility.UTF8ToString(this._libopenmpt, this._libopenmpt._openmpt_module_highlight_pattern_row_channel(this.modulePtr, i, j, k));
           row_commands.push(command);
+          row_highlight.push(highlight_command);
         }
         pattern_data.push(row_commands);
+        pattern_highlight_data.push(row_highlight);
       }
 
       command_data.push(pattern_data);
+      highlight_data.push(pattern_highlight_data);
     }
 
     //console.log("Patterns!");
@@ -323,7 +330,8 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
 
     this.port.postMessage({
       type: 'patterns',
-      value: command_data
+      pattern: command_data,
+      highlight: highlight_data,
     });
 
     this.orderCount = this._libopenmpt._openmpt_module_get_num_orders(this.modulePtr);
