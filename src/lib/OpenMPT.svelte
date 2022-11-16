@@ -158,7 +158,8 @@
       return;
     }
 
-    const input = song.full_path;
+
+    const input = song.full_path.replace('public/', '');
 
     let xhr = new XMLHttpRequest();
     // Mel: Need to encode the uri else we'll fail on hashes!
