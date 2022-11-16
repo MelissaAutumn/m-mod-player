@@ -67,7 +67,7 @@
     <!-- Bottom Bar -->
     <div class="fixed-overlay">
         <MenuBar on:page-change={onPageChange} page={page} />
-        <SongBar on:playback-state={onPlaybackState} song={song} playback_state={playback_state} />
+        <SongBar on:playback-state={onPlaybackState} playback_state={playback_state} />
     </div>
 
     <!-- "Invisible" media comps -->

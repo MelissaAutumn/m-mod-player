@@ -5,7 +5,6 @@
   import {song_metadata} from "../../stores/openmptStore.js";
   import {createEventDispatcher} from "svelte";
 
-  export let song = null;
   export let playback_state = playback_states.Paused;
 
   const dispatch = createEventDispatcher();
@@ -18,7 +17,6 @@
       playback_state: (playback_state === playback_states.Playing) ? playback_states.Paused : playback_states.Playing
     })
   }
-
 </script>
 <Bar position="bottom">
     <button class="btn-item btn-no-radius" on:click={onClick}>

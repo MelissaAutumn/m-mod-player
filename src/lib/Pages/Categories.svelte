@@ -22,7 +22,7 @@
     {#if categories}
         <table class="table">
             {#each Object.keys(categories) as _category, index}
-                <tr role="row">
+                <tr>
                     <td>
                         <button on:click={() => onSelect(_category)} class='btn-item btn-category' class:selected={category === _category}>{_category.split('/').splice(0).join('/')}</button>
                     </td>
@@ -48,9 +48,6 @@
 
         border-top: var(--background-colour-alt) 2px solid;
         border-radius: 8px;
-    }
-    th {
-        padding: 0.6em 1.2em;
     }
     .btn-category {
         width: 100%;

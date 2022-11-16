@@ -24,7 +24,7 @@
     {#if songs}
         <table class="table">
         {#each songs as _song, index}
-            <tr role="row">
+            <tr>
                 <td>
                     <button on:click={() => onSelect(_song)} class='btn-item btn-song' class:selected={song === _song}>{_song.split('/').splice(1).join('/') || _song}</button>
                 </td>
@@ -50,9 +50,6 @@
 
         border-top: var(--background-colour-alt) 2px solid;
         border-radius: 8px;
-    }
-    th {
-        padding: 0.6em 1.2em;
     }
     .btn-song {
         width: 100%;
