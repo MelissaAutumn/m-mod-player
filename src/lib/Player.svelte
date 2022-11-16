@@ -17,11 +17,6 @@
   let page = pages.Categories;
   let audio_element = null;
 
-  // This isn't uhh..great.
-  $: if (category) {
-    page = pages.Songs;
-  }
-
   $: if (page) {
     window.scrollTo(0, 0);
   }
@@ -33,6 +28,7 @@
   }
   const onCategorySelect = (evt) => {
     category = evt.detail?.category;
+    page = pages.Songs;
   }
   const onPlaybackState = (evt) => {
     playback_state = evt.detail?.playback_state;
