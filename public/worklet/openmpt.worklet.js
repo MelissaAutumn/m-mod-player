@@ -32,6 +32,8 @@
         var read_, readAsync, readBinary;
 
         if (ENVIRONMENT_IS_NODE) {
+          // temp hack
+          const __dirname = './';
           if (ENVIRONMENT_IS_WORKER) {
             scriptDirectory = require("path").dirname(scriptDirectory) + "/";
           } else {
@@ -4497,7 +4499,7 @@
           evt.data.value = null;
         }
           break;
-        case "subsong":
+        case "sequence":
           this.setSubsong(evt.data.value);
           break;
         case "loop":
@@ -4552,7 +4554,6 @@
     }
 
     setSubsong(index) {
-      console.log("Setting sub song to ", index);
       this._libopenmpt._openmpt_module_select_subsong(this.modulePtr, index);
     }
 
