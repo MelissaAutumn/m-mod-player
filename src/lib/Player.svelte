@@ -26,6 +26,10 @@
     page = pages.Songs;
   }
 
+  $: if (page) {
+    window.scrollTo(0, 0);
+  }
+
   // Event handlers
   const onSongSelect = (evt) => {
     song = evt.detail?.song;
@@ -51,10 +55,12 @@
         <Songs
             on:song-select={onSongSelect}
             category={category}
+            song={song}
         />
     {:else if page === pages.Categories}
         <Categories
             on:category-select={onCategorySelect}
+            category={category}
         />
     {/if}
 
@@ -65,10 +71,25 @@
     </div>
 
     <!-- "Invisible" media comps -->
-    <OpenMPT category={category} song={song} sequence={sequence} isPlaying={playback_state === playback_states.Playing} audio_element={audio_element}/>
+    <OpenMPT
+        isPlaying={playback_state === playback_states.Playing}
+        audio_element={audio_element}
+        sequence={sequence}
+        category={category}
+        song={song}
+    />
     <!-- Allows media meta data, need to split up later -->
-    <MediaSession category={category} song={song} sequence={sequence} is_playing={playback_state === playback_states.Playing}/>
-    <audio on:play={() => onAudioToggle(playback_states.Playing)} on:pause={()=> onAudioToggle(playback_states.Paused)} bind:this={audio_element} controls></audio>
+    <MediaSession
+        is_playing={playback_state === playback_states.Playing}
+        sequence={sequence}
+        category={category}
+        song={song}
+    />
+    <audio
+        on:play={() => onAudioToggle(playback_states.Playing)}
+        on:pause={()=> onAudioToggle(playback_states.Paused)}
+        bind:this={audio_element}
+    ></audio>
 </div>
 <style>
     :root {

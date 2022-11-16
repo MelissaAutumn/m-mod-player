@@ -26,7 +26,7 @@
         {#each songs as _song, index}
             <tr role="row">
                 <td>
-                    <button on:click={() => onSelect(_song)} class='btn-item btn-song' class:selected={song === _song}>{_song.split('/').splice(1).join('/')}</button>
+                    <button on:click={() => onSelect(_song)} class='btn-item btn-song' class:selected={song === _song}>{_song.split('/').splice(1).join('/') || _song}</button>
                 </td>
             </tr>
         {/each}
