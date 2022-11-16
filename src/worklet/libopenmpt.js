@@ -39,6 +39,8 @@ var libopenmpt = (() => {
       }
 
       if (ENVIRONMENT_IS_NODE) {
+        // temp hack
+        const __dirname = './';
         if (ENVIRONMENT_IS_WORKER) {
           scriptDirectory = require("path").dirname(scriptDirectory) + "/"
         } else {
