@@ -41,26 +41,44 @@
   $: channels = pattern_data[0]?.length;
 
 
-
+  /**
+   * Returns a colourfully formatted pattern
+   *
+   * Rolls up same colour characters, to prevent excessive amounts of spans.
+   * @param pattern[]
+   * @param highlight[]
+   * @returns {string}
+   */
   const process_highlight = (pattern, highlight) => {
     let highlighted_pattern = [];
 
-
+    let val = [];
+    let prev_rgb_val = null;
     for (let i = 0; i < pattern.length; i++) {
       const highlight_character = highlight[i];
       const current_character = pattern[i];
       const rgb_val = highlight_pattern_map[highlight_character] ?? '';
-      let val = '';
-      if (rgb_val) {
-        val += `<span style="color: ${rgb_val}">`;
-      }
-      val += current_character;
-      if (rgb_val) {
-        val += '</span>';
-      }
-      highlighted_pattern.push(val);
-    }
 
+      // Skip spaces
+      if (current_character === ' ') {
+        val.push(current_character);
+        continue;
+      }
+
+      // If rgb values differ, close the span and start a new one!
+      if (rgb_val !== prev_rgb_val) {
+        if (val.length > 0) {
+          val.push('</span>');
+        }
+        val.push(`<span style="color: ${rgb_val}">`);
+      }
+
+      val.push(current_character);
+
+      prev_rgb_val = rgb_val;
+    }
+    highlighted_pattern.push(val.join(''));
+    highlighted_pattern.push('</span>');
 
     return highlighted_pattern.join('');
   }
