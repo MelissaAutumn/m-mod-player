@@ -27,3 +27,5 @@ export const highlights = writable([]);
 export const current_pattern = writable(0);
 export const current_row = writable(0);
 export const next_pattern = writable(0);
+
+export const channel_volume = writable([]);

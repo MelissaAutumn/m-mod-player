@@ -6,7 +6,7 @@
     patterns,
     current_row,
     current_pattern,
-    next_pattern, highlights
+    next_pattern, highlights, channel_volume
   } from "../stores/openmptStore.js";
 
   let loopMode = true;
@@ -96,6 +96,12 @@
           case 'patterns':
             patterns.set(evt.data.pattern);
             highlights.set(evt.data.highlight);
+
+            const channels = $patterns[0][0]?.length;
+            const array_channels = new Array(channels);
+            array_channels.fill(1.0);
+            channel_volume.set( array_channels );
+
             break;
           case 'current_data':
             current_row.set(evt.data.row);
@@ -155,6 +161,22 @@
     }
   }
 
+  const handleChannelVolume = (channels) => {
+    if (!processorNode) {
+      return;
+    }
+
+    for (const channel in channels) {
+      const volume = channels[channel];
+      processorNode.port.postMessage({
+        type: 'channel_volume',
+        channel: channel,
+        volume: volume,
+      });
+    }
+
+  }
+
   const handleSubsong = (index) => {
     if (!processorNode) {
       return;
@@ -203,7 +225,9 @@
     handleSubsong(sequence);
   }
   $: handlePlayback(isPlaying);
-
+  $: if ($channel_volume) {
+    handleChannelVolume($channel_volume);
+  }
 
 
 </script>

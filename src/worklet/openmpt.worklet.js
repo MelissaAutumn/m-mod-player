@@ -127,8 +127,10 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
   #destructorCalled = false;
   bufferPtr = null;
   modulePtr = null;
+  extModulePtr = null;
   leftBufferPtr = null;
   rightBufferPtr = null;
+  interactiveExtPtr = null;
 
   looping = true;
   maxFramesPerChunk = 128;
@@ -146,7 +148,7 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
   constructor(options) {
     super();
 
-    this._libopenmpt = Module.libopenmpt();
+    this._libopenmpt = Module();
 
     if (!this._libopenmpt) {
       return;
@@ -192,14 +194,22 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
       case "data": {
         this.destroyModule();
 
-        this.modulePtr = this.createModule(evt.data.value);
-        if (this.modulePtr) {
-          // A little awkward, but set our current looping preference
-          this.setLoopMode(this.looping);
-          this.retrieveMetaData();
-          this.retrieveSubSongs();
-          this.getTrack();
+        // Note we create an extension api module ptr first...
+        this.extModulePtr = this.createModule(evt.data.value);
+        if (this.extModulePtr) {
+          this.getExtensionInteractiveAPI();
+          // ...and then we get the regular api module from the extension module ptr
+          this.modulePtr = this._libopenmpt._openmpt_module_ext_get_module(this.extModulePtr);
+
+          if (this.modulePtr) {
+            // A little awkward, but set our current looping preference
+            this.setLoopMode(this.looping);
+            this.retrieveMetaData();
+            this.retrieveSubSongs();
+            this.getTrack();
+          }
         }
+
 
         evt.data.value = null;
       }
@@ -212,6 +222,9 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
         break;
       case "dispose":
         this.destruct();
+        break;
+      case "channel_volume":
+        this.setChannelVolume(evt.data.channel, evt.data.volume);
         break;
     }
   }
@@ -256,6 +269,10 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
     })
   }
 
+  getExtensionInteractiveAPI() {
+    this.interactiveExtPtr = this._libopenmpt._openmpt_module_ext_create_interface_interactive(this.extModulePtr);
+  }
+
   setSubsong(index) {
     this._libopenmpt._openmpt_module_select_subsong(this.modulePtr, index);
   }
@@ -265,21 +282,35 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
     this._libopenmpt._openmpt_module_set_repeat_count(this.modulePtr, this.looping ? -1 : 0);
   }
 
+  setChannelVolume(channel, volume) {
+    // Clamp to 0.0 - 1.0
+    volume = Math.max(volume, 0.0);
+    volume = Math.min(volume, 1.0);
+    this._libopenmpt._openmpt_module_ext_interface_interactive_set_channel_volume(this.extModulePtr, this.interactiveExtPtr, channel, volume);
+  }
+
   createModule(buffer) {
     const byteArray = new Int8Array(buffer);
     this.bufferPtr = this._libopenmpt._malloc(byteArray.byteLength);
     this._libopenmpt.HEAPU8.set(byteArray, this.bufferPtr);
-    return this._libopenmpt._openmpt_module_create_from_memory(this.bufferPtr, byteArray.byteLength, 0, 0, 0);
+    // 0's are just nulling out some error/logging function that we could use.
+    return this._libopenmpt._openmpt_module_ext_create_from_memory(this.bufferPtr, byteArray.byteLength, 0, 0, 0, 0, 0, 0, 0);
   }
 
   destroyModule() {
-    if (this.modulePtr) {
-      this._libopenmpt._openmpt_module_destroy(this.modulePtr);
+    // `extModulePtr === modulePtr`! so don't delete it, just null it out.
+    if (this.extModulePtr) {
+      this._libopenmpt._openmpt_module_ext_destroy(this.extModulePtr);
+      this.extModulePtr = null;
       this.modulePtr = null;
     }
     if (this.bufferPtr) {
       this._libopenmpt._free(this.bufferPtr);
       this.bufferPtr = null;
+    }
+    if (this.interactiveExtPtr) {
+      this._libopenmpt._openmpt_module_ext_destroy_interface(this.interactiveExtPtr);
+      this.interactiveExtPtr = null;
     }
   }
 
@@ -369,6 +400,9 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
     const next_order = current_order + 1;
     const pattern = this._libopenmpt._openmpt_module_get_current_pattern(this.modulePtr);
     const next_pattern = this._libopenmpt._openmpt_module_get_order_pattern(this.modulePtr, next_order < this.orderCount ? next_order : 0);
+
+
+
 
     if (log) {
       console.log("Current order index", this.currentOrder);

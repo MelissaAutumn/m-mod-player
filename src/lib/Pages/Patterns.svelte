@@ -1,6 +1,13 @@
 <script>
   import Page from "../Base/Page.svelte";
-  import {patterns, current_row, current_pattern, next_pattern, highlights} from "../../stores/openmptStore.js";
+  import {
+    patterns,
+    current_row,
+    current_pattern,
+    next_pattern,
+    highlights,
+    channel_volume
+  } from "../../stores/openmptStore.js";
 
   // Style color codes that will be applied to our notes
   const highlight_pattern_map = {
@@ -33,6 +40,8 @@
   $: next_pattern_data = $patterns[$next_pattern];
   $: channels = pattern_data[0]?.length;
 
+
+
   const process_highlight = (pattern, highlight) => {
     let highlighted_pattern = [];
 
@@ -56,6 +65,10 @@
     return highlighted_pattern.join('');
   }
 
+  const onChannelMute = (channel) => {
+    $channel_volume[channel] = $channel_volume[channel] === 1.0 ? 0.0 : 1.0;
+  };
+
 </script>
 
 <Page>
@@ -69,6 +82,11 @@
     <div class="contents">
     {#if $patterns}
         <table class="table">
+            <tr class="header-row" style="grid-template-columns: repeat({channels} , 1fr)">
+                {#each [...Array(channels).keys()] as _channel}
+                    <td><button on:click={() => onChannelMute(_channel)}>Channel {_channel}</button></td>
+                {/each}
+            </tr>
             {#each pattern_data as _row, index}
 
             <tr style="grid-template-columns: repeat({channels} , 1fr)">
@@ -97,14 +115,25 @@
 </Page>
 
 <style>
+    :root {
+        --border-style: 1px solid var(--panel-colour);
+    }
     .contents {
         width: 100%;
+
     }
     .table {
         font-family: monospace;
         font-size: 75%;
         width: 100%;
 
+    }
+    .header-row {
+        border-bottom: var(--border-style);
+        width: max-content;
+    }
+    .muted {
+        color: grey;
     }
     .next-pattern-row {
         color: grey;
@@ -113,10 +142,11 @@
         display: inline-grid;
         width: 100%;
         line-height: 24pt;
+
     }
     td {
-        border-left: 1px solid var(--panel-colour);
-        border-right: 1px solid var(--panel-colour);
+        border-left: var(--border-style);
+        border-right: var(--border-style);
         min-width: max-content;
         padding: 0 4px 0 4px;
     }
