@@ -6,8 +6,10 @@
     patterns,
     current_row,
     current_pattern,
-    next_pattern, highlights, channel_volume
+    next_pattern,
+    channel_volume
   } from "../stores/openmptStore.js";
+  import {process_highlight} from "../utilities/pattern.js";
 
   let loopMode = true;
   let processorNode = null;
@@ -94,13 +96,12 @@
             sequence_data.set(evt.data.value);
             break;
           case 'patterns':
-            patterns.set(evt.data.pattern);
-            highlights.set(evt.data.highlight);
+            patterns.set(processPatternHighlights(evt.data.pattern, evt.data.highlight));
 
             const channels = $patterns[0][0]?.length;
             const array_channels = new Array(channels);
             array_channels.fill(1.0);
-            channel_volume.set( array_channels );
+            channel_volume.set(array_channels);
 
             break;
           case 'current_data':
@@ -119,6 +120,22 @@
 
     })
   });
+
+  /**
+   * Absolutely ridiculous maps here.
+   * @param patterns
+   * @param highlights
+   * @returns {*}
+   */
+  const processPatternHighlights = (patterns, highlights) => {
+    return patterns.map((sheet, sheet_index) => {
+      return sheet.map((row, row_index) => {
+        return row.map((column, column_index) => {
+          return process_highlight(column, highlights[sheet_index][row_index][column_index]);
+        });
+      });
+    });
+  }
 
   const onLoad = (buffer) => {
     if (!processorNode) {
@@ -182,19 +199,17 @@
       return;
     }
 
-    console.log("Handle subsong");
-
     processorNode.port.postMessage({
       type: 'sequence',
       value: index
     });
   }
 
+  // FIXME: xhr.response is held on for longer than it needs to be, and afaik is never collected by the gc.
   const LoadFile = (song, callback) => {
     if (!song) {
       return;
     }
-
 
     const input = song.full_path.replace('public/', '');
 
@@ -228,6 +243,5 @@
   $: if ($channel_volume) {
     handleChannelVolume($channel_volume);
   }
-
 
 </script>

@@ -318,7 +318,6 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
 
   getTrack() {
     const channel_count = this._libopenmpt._openmpt_module_get_num_channels(this.modulePtr);
-
     const pattern_count = this._libopenmpt._openmpt_module_get_num_patterns(this.modulePtr);
     const command_data = [];
     const highlight_data = [];
@@ -326,17 +325,8 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
     for (let i = 0; i < pattern_count; i++) {
       const pattern_data = [];
       const pattern_highlight_data = [];
-      //let name = Utility.UTF8ToString(this._libopenmpt, this._libopenmpt._openmpt_module_get_pattern_name(this.modulePtr, i));
       const pattern_rows = this._libopenmpt._openmpt_module_get_pattern_num_rows(this.modulePtr, i);
 
-
-      /*
-       	int32_t  	pattern,
-		int32_t  	row,
-		int32_t  	channel,
-		size_t  	width,
-		int  	pad
-       */
       for (let j = 0; j < pattern_rows; j++) {
         const row_commands = [];
         const row_highlight = [];
@@ -353,9 +343,6 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
       command_data.push(pattern_data);
       highlight_data.push(pattern_highlight_data);
     }
-
-    //console.log("Patterns!");
-    //console.log(command_data);
 
     this.commandData = command_data;
 
@@ -394,22 +381,10 @@ class LibOpenMPTProcessor extends AudioWorkletProcessor {
       outputs[0][1][i] = rawAudioRight[i];
     }
 
-
-    let log = false;
     const current_order = this._libopenmpt._openmpt_module_get_current_order(this.modulePtr);
     const next_order = current_order + 1;
     const pattern = this._libopenmpt._openmpt_module_get_current_pattern(this.modulePtr);
     const next_pattern = this._libopenmpt._openmpt_module_get_order_pattern(this.modulePtr, next_order < this.orderCount ? next_order : 0);
-
-
-
-
-    if (log) {
-      console.log("Current order index", this.currentOrder);
-      console.log("Next order index", next_order);
-      console.log("Current pattern", this.currentPattern);
-      console.log("Next pattern", next_pattern);
-    }
 
     this.port.postMessage({
       pattern: pattern,

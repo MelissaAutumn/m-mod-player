@@ -5,88 +5,17 @@
     current_row,
     current_pattern,
     next_pattern,
-    highlights,
     channel_volume
   } from "../../stores/openmptStore.js";
 
-  // Style color codes that will be applied to our notes
-  const highlight_pattern_map = {
-/*
-    " " : empty/space
-    "." : empty/dot
-    "n" : generic note
-    "m" : special note
-    "i" : generic instrument
-    "u" : generic volume column effect
-    "v" : generic volume column parameter
-    "e" : generic effect column effect
-    "f" : generic effect column parameter
-*/
-    // Colour-scheme mostly taken from OpenMPT's Blue (FT2) theme. (It doesn't line up 1:1)
-    ' ': '',
-    '.': 'rgb(224,224,64)',
-    'n': 'rgb(224,224,64)',
-    'm': 'rgb(224,224,64)',
-    'i': 'rgb(255,255,0)',
-    'u': 'rgb(0,255,0)',
-    'v': 'rgb(0,255,0)',
-    'e': 'rgb(0,255,255)',
-    'f': 'rgb(0,255,255)',
-  }
-
   // Grab the current pattern
-  $: pattern_data = $patterns[$current_pattern].slice($current_row);
-  $: highlight_data = $highlights[$current_pattern].slice($current_row);
-  $: next_pattern_data = $patterns[$next_pattern];
-  $: channels = pattern_data[0]?.length;
-
-
-  /**
-   * Returns a colourfully formatted pattern
-   *
-   * Rolls up same colour characters, to prevent excessive amounts of spans.
-   * @param pattern[]
-   * @param highlight[]
-   * @returns {string}
-   */
-  const process_highlight = (pattern, highlight) => {
-    let highlighted_pattern = [];
-
-    let val = [];
-    let prev_rgb_val = null;
-    for (let i = 0; i < pattern.length; i++) {
-      const highlight_character = highlight[i];
-      const current_character = pattern[i];
-      const rgb_val = highlight_pattern_map[highlight_character] ?? '';
-
-      // Skip spaces
-      if (current_character === ' ') {
-        val.push(current_character);
-        continue;
-      }
-
-      // If rgb values differ, close the span and start a new one!
-      if (rgb_val !== prev_rgb_val) {
-        if (val.length > 0) {
-          val.push('</span>');
-        }
-        val.push(`<span style="color: ${rgb_val}">`);
-      }
-
-      val.push(current_character);
-
-      prev_rgb_val = rgb_val;
-    }
-    highlighted_pattern.push(val.join(''));
-    highlighted_pattern.push('</span>');
-
-    return highlighted_pattern.join('');
-  }
+  $: pattern_data = $patterns.length > 0 ? $patterns[$current_pattern].slice($current_row) : [];
+  $: next_pattern_data = $patterns.length > 0 ? $patterns[$next_pattern] : [];
+  $: channels = pattern_data[0]?.length ?? 0;
 
   const onChannelMute = (channel) => {
     $channel_volume[channel] = $channel_volume[channel] === 1.0 ? 0.0 : 1.0;
   };
-
 </script>
 
 <Page>
@@ -106,20 +35,19 @@
                 {/each}
             </tr>
             {#each pattern_data as _row, index}
-
-            <tr style="grid-template-columns: repeat({channels} , 1fr)">
+                <tr style="grid-template-columns: repeat({channels} , 1fr)">
                     {#each _row as _pattern, index2}
                         <td>
-                            {@html process_highlight(_pattern, highlight_data[index][index2])}
+                            {@html _pattern}
                         </td>
                     {/each}
-            </tr>
+                </tr>
             {/each}
             {#each next_pattern_data as _row, index}
                 <tr class="next-pattern-row" style="grid-template-columns: repeat({channels} , 1fr)">
                     {#each _row as _pattern}
                         <td>
-                            {_pattern}
+                            {@html _pattern}
                         </td>
                     {/each}
                 </tr>
@@ -148,7 +76,7 @@
     }
     .header-row {
         border-bottom: var(--border-style);
-        width: max-content;
+        width: 100%;
     }
     .muted {
         color: grey;

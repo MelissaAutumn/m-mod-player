@@ -18,14 +18,16 @@ export const song_metadata = writable({
   messageRaw: null,
   warnings: null,
 });
-export const sequence_data = writable([
+export const sequence_data = writable([]);
 
-]);
+// Stored in slightly dumb way for now.
+// Array[Pattern Sheets][Rows][Columns/Channels]
 export const patterns = writable([]);
-export const highlights = writable([]);
+
+// Floats from 0.0 - 1.0 stored in an array
+// Array[Column/Channel] = 0.0 - 1.0
+export const channel_volume = writable([]);
 
 export const current_pattern = writable(0);
 export const current_row = writable(0);
 export const next_pattern = writable(0);
-
-export const channel_volume = writable([]);
